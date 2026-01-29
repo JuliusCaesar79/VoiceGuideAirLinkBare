@@ -72,3 +72,11 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# --- Secrets / signing ---
+android/keystore.properties
+android/app/*.jks
+
+# --- Generated folders ---
+android/app/release/
+android/.kotlin/
