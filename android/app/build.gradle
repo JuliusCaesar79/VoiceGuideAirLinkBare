@@ -3,21 +3,18 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 /**
- * Configurazione React Native per l'app Android.
- * Usiamo il plugin ufficiale "com.facebook.react".
+ * Hermes: controllato da android/gradle.properties
+ * hermesEnabled=true  -> Hermes ON
+ * hermesEnabled=false -> JSC ON
  */
-react {
-    /* Autolinking */
-    autolinkLibrariesWithApp()
-}
+def hermesEnabled = (project.findProperty("hermesEnabled") ?: "false").toBoolean()
 
 /**
- * Disabilitiamo esplicitamente HERMES per questa app.
- * In questo modo React Native userà JSC come motore JS.
+ * Configurazione React Native per l'app Android.
  */
-project.ext.react = [
-        enableHermes: false
-]
+react {
+    autolinkLibrariesWithApp()
+}
 
 /**
  * Proguard solo sulle build release (per ora disattivato).
@@ -25,30 +22,19 @@ project.ext.react = [
 def enableProguardInReleaseBuilds = false
 
 /**
- * Motore JavaScript: usiamo JSC classico, NON Hermes.
+ * Motore JavaScript alternativo: JSC (usato solo se Hermes è OFF)
  */
-def jscFlavor = 'org.webkit:android-jsc:+'
+def jscFlavor = "org.webkit:android-jsc:+"
 
 /**
  * --------------------------------------------------
  * Caricamento credenziali firma RELEASE
  * --------------------------------------------------
- * Preferito: android/keystore.properties (NON committare)
- *
- * Contenuto previsto:
- * storeFile=../keystores/voiceguideairlink-upload.jks
- * storePassword=...
- * keyAlias=voiceguideairlink
- * keyPassword=...
- *
- * Fallback: variabili ambiente
- * ANDROID_KEYSTORE_FILE, ANDROID_KEYSTORE_PASSWORD,
- * ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
  */
-def keystoreProperties = new Properties()
+def keystoreProperties = new java.util.Properties()
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    keystoreProperties.load(new java.io.FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -59,17 +45,13 @@ android {
     namespace "com.voiceguideairlinkbare"
 
     defaultConfig {
-        // ✅ ID definitivo per Google Play
         applicationId "com.voiceguideairlinkbare"
-
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 12
+        versionName "1.0.11"
 
-        // 🔁 Incrementare ad ogni upload su Play
-        versionCode 5
-        versionName "1.0.4"
-
-        // 🔽 FORZIAMO SOLO ARM64 PER DIMAGRIRE L'APK
+        // 🔽 solo ARM64 (ok per Hermes + requisito 16 KB)
         ndk {
             abiFilters "arm64-v8a"
         }
@@ -77,22 +59,20 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file("debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
         }
 
         release {
-            // ✅ Non hardcodiamo password nel repo.
-            // Usa keystore.properties oppure ENV.
-            def sf = keystoreProperties['storeFile'] ?: System.getenv("ANDROID_KEYSTORE_FILE")
-            def sp = keystoreProperties['storePassword'] ?: System.getenv("ANDROID_KEYSTORE_PASSWORD")
-            def ka = keystoreProperties['keyAlias'] ?: System.getenv("ANDROID_KEY_ALIAS")
-            def kp = keystoreProperties['keyPassword'] ?: System.getenv("ANDROID_KEY_PASSWORD")
+            def sf = keystoreProperties["storeFile"] ?: System.getenv("ANDROID_KEYSTORE_FILE")
+            def sp = keystoreProperties["storePassword"] ?: System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            def ka = keystoreProperties["keyAlias"] ?: System.getenv("ANDROID_KEY_ALIAS")
+            def kp = keystoreProperties["keyPassword"] ?: System.getenv("ANDROID_KEY_PASSWORD")
 
-            if (sf != null && sp != null && ka != null && kp != null) {
-                storeFile file(sf)
+            if (sf && sp && ka && kp) {
+                storeFile rootProject.file(sf)
                 storePassword sp
                 keyAlias ka
                 keyPassword kp
@@ -102,13 +82,11 @@ android {
 
     buildTypes {
         debug {
-            // ✅ debug separato: com.voiceguideairlinkbare.dev
             applicationIdSuffix ".dev"
             signingConfig signingConfigs.debug
         }
 
         release {
-            // ✅ release firmata con keystore di upload
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
@@ -117,9 +95,13 @@ android {
 }
 
 dependencies {
-    // Versione di react-android gestita dal plugin React Native
     implementation("com.facebook.react:react-android")
 
-    // ✅ FORZIAMO JSC, NIENTE HERMES
-    implementation jscFlavor
+    // ✅ Hermes correttamente incluso quando attivo
+    if (hermesEnabled) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        // ✅ JSC usato solo se Hermes è OFF
+        implementation jscFlavor
+    }
 }

@@ -4,10 +4,12 @@ buildscript {
         minSdkVersion = 24
         compileSdkVersion = 35
         targetSdkVersion = 35
-        ndkVersion = "26.1.10909125"
 
-        // Kotlin raccomandata per RN 0.76.x
-        kotlinVersion = "1.9.24"
+        // ✅ Usiamo il tuo NDK già installato
+        ndkVersion = "28.0.13004108"
+
+        // ✅ Kotlin consigliata dal template RN 0.77
+        kotlinVersion = "2.0.21"
     }
     repositories {
         google()
@@ -17,11 +19,11 @@ buildscript {
         // Android Gradle Plugin
         classpath("com.android.tools.build:gradle")
 
-        // React Native Plugin
+        // React Native Gradle Plugin
         classpath("com.facebook.react:react-native-gradle-plugin")
 
         // Kotlin Plugin
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
 

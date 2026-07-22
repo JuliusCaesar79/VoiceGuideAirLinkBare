@@ -168,18 +168,29 @@ class VoiceGuideForegroundModule(
     fun stopService() {
         Log.i(
             TAG,
-            "stopService() chiamato da JS " +
-                    "| thread=${Thread.currentThread().name}"
+            "stopService() chiamato da JS | thread=${Thread.currentThread().name}"
         )
 
         val context = reactApplicationContext
-        val intent = Intent(context, VoiceGuideForegroundService::class.java)
 
+        // 1) STOP deterministico: invia ACTION_STOP al service (entra in onStartCommand)
         try {
-            val stopped = context.stopService(intent)
-            Log.i(TAG, "stopService() → stopService() restituisce=$stopped")
+            val stopIntent = Intent(context, VoiceGuideForegroundService::class.java).apply {
+                action = VoiceGuideForegroundService.ACTION_STOP
+            }
+            Log.d(TAG, "stopService() → invio ACTION_STOP via startForegroundService")
+            ContextCompat.startForegroundService(context, stopIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Errore stop servizio", e)
+            Log.e(TAG, "Errore invio ACTION_STOP", e)
+        }
+
+        // 2) Fallback: stopService classico
+        try {
+            val intent = Intent(context, VoiceGuideForegroundService::class.java)
+            val stopped = context.stopService(intent)
+            Log.i(TAG, "stopService() fallback → stopService() restituisce=$stopped")
+        } catch (e: Exception) {
+            Log.e(TAG, "Errore stop servizio (fallback)", e)
         }
     }
 }

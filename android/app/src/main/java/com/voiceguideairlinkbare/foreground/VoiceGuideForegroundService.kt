@@ -40,6 +40,9 @@ class VoiceGuideForegroundService : Service() {
         const val EXTRA_ROLE = "vg_role"
         const val ROLE_GUIDE = "guide"
         const val ROLE_LISTENER = "listener"
+
+        // 🛑 Action per stop deterministico del Service (cleanup + stopSelf)
+        const val ACTION_STOP = "com.voiceguideairlinkbare.foreground.ACTION_STOP"
     }
 
     private var rtcEngine: RtcEngine? = null
@@ -73,8 +76,16 @@ class VoiceGuideForegroundService : Service() {
         Log.i(
             TAG,
             "onStartCommand() | startId=$startId flags=$flags intent=$intent " +
-                    "| thread=${Thread.currentThread().name}"
+                    "| action=${intent?.action} | thread=${Thread.currentThread().name}"
         )
+
+        // 🛑 STOP deterministico: riceviamo un comando e puliamo subito Agora + foreground
+        if (intent?.action == ACTION_STOP) {
+            Log.i(TAG, "ACTION_STOP received → hardCleanup + stopSelf")
+            hardCleanup("ACTION_STOP")
+            stopSelf()
+            return START_NOT_STICKY
+        }
 
         // 🔥 Fake MIC USE per soddisfare Android 14 (tipo foreground microphone)
         try {
@@ -137,34 +148,54 @@ class VoiceGuideForegroundService : Service() {
         // 🔊 AVVIO AGORA con ruolo specifico (guida / ospite)
         startAgoraFromIntent(intent, role)
 
+        // Manteniamo comportamento background invariato per ora
         return START_STICKY
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.i(TAG, "onTaskRemoved() → hardCleanup + stopSelf")
+        hardCleanup("onTaskRemoved")
+        stopSelf()
+        super.onTaskRemoved(rootIntent)
+    }
+
     override fun onDestroy() {
-        Log.i(TAG, "onDestroy() chiamato – cleanup Agora e stopForeground")
-
-        // 🔊 Cleanup Agora
-        try {
-            rtcEngine?.leaveChannel()
-            Log.d(TAG, "Agora leaveChannel() chiamato")
-            RtcEngine.destroy()
-            rtcEngine = null
-            Log.i(TAG, "Agora engine destroyed")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error destroying Agora engine", e)
-        }
-
-        try {
-            stopForeground(STOP_FOREGROUND_REMOVE)
-            Log.d(TAG, "stopForeground(STOP_FOREGROUND_REMOVE) eseguito")
-        } catch (e: Exception) {
-            Log.e(TAG, "Errore stopForeground", e)
-        }
-
+        Log.i(TAG, "onDestroy() called")
+        hardCleanup("onDestroy")
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun hardCleanup(reason: String) {
+        Log.i(TAG, "HARD_CLEANUP_START reason=$reason engineNull=${rtcEngine == null}")
+
+        // 🔊 Cleanup Agora
+        try {
+            rtcEngine?.leaveChannel()
+            Log.d(TAG, "Agora leaveChannel() called")
+        } catch (e: Exception) {
+            Log.e(TAG, "leaveChannel() error", e)
+        }
+
+        try {
+            RtcEngine.destroy()
+            Log.d(TAG, "RtcEngine.destroy() called")
+        } catch (e: Exception) {
+            Log.e(TAG, "RtcEngine.destroy() error", e)
+        }
+
+        rtcEngine = null
+
+        try {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            Log.d(TAG, "stopForeground(STOP_FOREGROUND_REMOVE) ok")
+        } catch (e: Exception) {
+            Log.e(TAG, "stopForeground error", e)
+        }
+
+        Log.i(TAG, "HARD_CLEANUP_END reason=$reason")
+    }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
