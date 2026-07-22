@@ -74,7 +74,8 @@ yarn-error.log
 
 # --- Secrets / signing ---
 android/keystore.properties
-android/app/*.jks
+android/**/*.jks
+android/**/*.keystore
 
 # --- Generated folders ---
 android/app/release/
