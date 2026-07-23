@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { apiGetSessionStatus, apiLeaveListener } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
 
@@ -30,6 +31,7 @@ export default function GuestTourScreen({
   onStartListening,
   onStopListening,
 }: Props) {
+  const { t } = useTranslation();
   const [isListening, setIsListening] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
 
@@ -83,9 +85,9 @@ export default function GuestTourScreen({
   };
 
   const confirmLeave = () => {
-    Alert.alert("Leave tour?", "You will stop listening and exit the session.", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Leave Tour", style: "destructive", onPress: handleLeave },
+    Alert.alert(t("guestTour.confirmLeaveTitle"), t("guestTour.confirmLeaveBody"), [
+      { text: t("common.cancel"), style: "cancel" },
+      { text: t("guestTour.leaveTour"), style: "destructive", onPress: handleLeave },
     ]);
   };
 
@@ -109,10 +111,7 @@ export default function GuestTourScreen({
         setIsListening(false);
       }
 
-      Alert.alert(
-        "Tour ended",
-        "This tour session has expired or was closed by the guide."
-      );
+      Alert.alert(t("guestTour.endedTitle"), t("guestTour.endedBody"));
       onLeave();
     };
 
@@ -151,7 +150,7 @@ export default function GuestTourScreen({
     };
   }, [sessionId, isListening, onStopListening, onLeave]);
 
-  const statusLabel = isListening ? "LISTENING" : "READY";
+  const statusLabel = isListening ? t("guestTour.statusListening") : t("guestTour.statusReady");
   const statusColor = isListening ? colors.success : colors.gray400;
 
   return (
@@ -160,8 +159,8 @@ export default function GuestTourScreen({
       <ScrollView contentContainerStyle={styles.container}>
         {/* HEADER */}
         <View style={styles.header}>
-          <Text style={styles.title}>Guest Tour</Text>
-          <Text style={styles.subtitle}>Listen to your guide in real time.</Text>
+          <Text style={styles.title}>{t("guestTour.title")}</Text>
+          <Text style={styles.subtitle}>{t("guestTour.subtitle")}</Text>
 
           <View style={[styles.statusBadge, { borderColor: statusColor }]}>
             <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
@@ -173,23 +172,19 @@ export default function GuestTourScreen({
 
         {/* INFO CARD */}
         <View style={styles.card}>
-          <Text style={styles.label}>Tour PIN</Text>
+          <Text style={styles.label}>{t("guestTour.pinLabel")}</Text>
           <Text style={styles.pinValue}>{pin}</Text>
 
-          <Text style={styles.helperText}>
-            You are connected to this tour. Keep this screen open while listening.
-          </Text>
+          <Text style={styles.helperText}>{t("guestTour.connectedHelper")}</Text>
 
           <View style={styles.dividerHorizontal} />
 
           <View style={styles.countdownBlock}>
-            <Text style={styles.label}>Time remaining</Text>
+            <Text style={styles.label}>{t("guestTour.timeRemainingLabel")}</Text>
             <Text style={styles.countdownValue}>
               {formatSeconds(remainingSeconds)}
             </Text>
-            <Text style={styles.helperText}>
-              When time runs out, the tour will end automatically.
-            </Text>
+            <Text style={styles.helperText}>{t("guestTour.timeRemainingHelper")}</Text>
           </View>
         </View>
 
@@ -212,12 +207,12 @@ export default function GuestTourScreen({
               isListening && styles.listenButtonTextActive,
             ]}
           >
-            {isListening ? "Stop Listening" : "Start Listening"}
+            {isListening ? t("guestTour.stopListening") : t("guestTour.startListening")}
           </Text>
         </Pressable>
 
         <Pressable style={styles.leaveButton} onPress={confirmLeave}>
-          <Text style={styles.leaveButtonText}>Leave Tour</Text>
+          <Text style={styles.leaveButtonText}>{t("guestTour.leaveTour")}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

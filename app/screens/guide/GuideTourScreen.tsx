@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { apiGetSessionStatus } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
 
@@ -30,6 +31,7 @@ export default function GuideTourScreen({
   onStopBroadcast,
   onEnd,
 }: Props) {
+  const { t } = useTranslation();
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [currentGuests, setCurrentGuests] = useState(0);
 
@@ -65,11 +67,11 @@ export default function GuideTourScreen({
 
   const confirmEndTour = () => {
     Alert.alert(
-      "End tour?",
-      "This will close the live session for everyone.",
+      t("guideTour.confirmEndTitle"),
+      t("guideTour.confirmEndBody"),
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "End Tour", style: "destructive", onPress: onEnd },
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("guideTour.endTour"), style: "destructive", onPress: onEnd },
       ]
     );
   };
@@ -97,10 +99,7 @@ export default function GuideTourScreen({
         setIsBroadcasting(false);
       }
 
-      Alert.alert(
-        "Session ended",
-        "Your tour session has expired or was closed."
-      );
+      Alert.alert(t("guideTour.endedTitle"), t("guideTour.endedBody"));
       onEnd();
     };
 
@@ -141,7 +140,7 @@ export default function GuideTourScreen({
     };
   }, [sessionId, isBroadcasting, onEnd, onStopBroadcast]);
 
-  const statusLabel = isBroadcasting ? "ON AIR" : "READY";
+  const statusLabel = isBroadcasting ? t("guideTour.statusOnAir") : t("guideTour.statusReady");
   const statusColor = isBroadcasting ? colors.success : colors.gray400;
 
   return (
@@ -150,8 +149,8 @@ export default function GuideTourScreen({
       <ScrollView contentContainerStyle={styles.container}>
         {/* HEADER */}
         <View style={styles.header}>
-          <Text style={styles.title}>Live Tour</Text>
-          <Text style={styles.subtitle}>Start real-time audio for your group.</Text>
+          <Text style={styles.title}>{t("guideTour.title")}</Text>
+          <Text style={styles.subtitle}>{t("guideTour.subtitle")}</Text>
 
           {/* STATUS BADGE */}
           <View style={[styles.statusBadge, { borderColor: statusColor }]}>
@@ -166,34 +165,30 @@ export default function GuideTourScreen({
         <View style={styles.card}>
           <View style={styles.row}>
             <View style={styles.infoBlock}>
-              <Text style={styles.label}>Tour PIN</Text>
+              <Text style={styles.label}>{t("guideTour.pinLabel")}</Text>
               <Text style={styles.value}>{pin}</Text>
-              <Text style={styles.helperText}>Share this PIN with your guests.</Text>
+              <Text style={styles.helperText}>{t("guideTour.pinHelper")}</Text>
             </View>
 
             <View style={styles.dividerVertical} />
 
             <View style={styles.infoBlock}>
-              <Text style={styles.label}>Guests</Text>
+              <Text style={styles.label}>{t("guideTour.guestsLabel")}</Text>
               <Text style={styles.value}>
                 {currentGuests} / {maxGuests}
               </Text>
-              <Text style={styles.helperText}>
-                Maximum allowed by your license.
-              </Text>
+              <Text style={styles.helperText}>{t("guideTour.guestsHelper")}</Text>
             </View>
           </View>
 
           <View style={styles.dividerHorizontal} />
 
           <View style={styles.countdownBlock}>
-            <Text style={styles.label}>Countdown</Text>
+            <Text style={styles.label}>{t("guideTour.countdownLabel")}</Text>
             <Text style={styles.countdownValue}>
               {formatSeconds(remainingSeconds)}
             </Text>
-            <Text style={styles.helperText}>
-              Time remaining for this session.
-            </Text>
+            <Text style={styles.helperText}>{t("guideTour.countdownHelper")}</Text>
           </View>
         </View>
 
@@ -216,12 +211,12 @@ export default function GuideTourScreen({
               isBroadcasting && styles.broadcastButtonTextActive,
             ]}
           >
-            {isBroadcasting ? "Stop Broadcasting" : "Start Broadcasting"}
+            {isBroadcasting ? t("guideTour.stopBroadcasting") : t("guideTour.startBroadcasting")}
           </Text>
         </Pressable>
 
         <Pressable style={styles.endButton} onPress={confirmEndTour}>
-          <Text style={styles.endButtonText}>End Tour</Text>
+          <Text style={styles.endButtonText}>{t("guideTour.endTour")}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

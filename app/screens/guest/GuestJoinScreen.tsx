@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { apiJoinPin } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export default function GuestJoinScreen({ onJoin, onBack }: Props) {
+  const { t } = useTranslation();
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
   const handleJoin = async () => {
     const trimmed = pin.trim();
     if (!trimmed) {
-      setError("Please enter the PIN code.");
+      setError(t("guestJoin.errorEmpty"));
       return;
     }
 
@@ -49,10 +51,11 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
       const sessionId: string | null = res?.session_id ?? null;
 
       Alert.alert(
-        "Joined tour",
-        `You are now connected to the tour.\nPIN: ${trimmed}\nListener ID: ${
-          listenerId || "n/a"
-        }`
+        t("guestJoin.successTitle"),
+        t("guestJoin.successBody", {
+          pin: trimmed,
+          listenerId: listenerId || t("guestJoin.notAvailable"),
+        })
       );
 
       onJoin({
@@ -61,10 +64,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
         sessionId,
       });
     } catch (err: any) {
-      setError(
-        err?.message ||
-          "Unable to join the tour. Please check the PIN and try again."
-      );
+      setError(err?.message || t("guestJoin.errorGeneric"));
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           style={styles.backBtn}
         >
-          <Text style={styles.backText}>← Back to Home</Text>
+          <Text style={styles.backText}>{t("common.backToHome")}</Text>
         </Pressable>
       </View>
 
@@ -96,20 +96,18 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.content}>
-            <Text style={styles.title}>Enter Tour PIN</Text>
-            <Text style={styles.subtitle}>
-              Type the PIN code you received from your guide to join the tour.
-            </Text>
+            <Text style={styles.title}>{t("guestJoin.title")}</Text>
+            <Text style={styles.subtitle}>{t("guestJoin.subtitle")}</Text>
 
             <TextInput
               style={styles.input}
-              placeholder="e.g. 006BT9"
+              placeholder={t("guestJoin.placeholder")}
               placeholderTextColor={colors.gray400}
               keyboardType="default"
               autoCapitalize="characters"
               value={pin}
-              onChangeText={(t) => {
-                setPin(t);
+              onChangeText={(text) => {
+                setPin(text);
                 if (error) setError(null);
               }}
               maxLength={8}
@@ -117,9 +115,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
 
             {error && <Text style={styles.error}>{error}</Text>}
 
-            <Text style={styles.helperText}>
-              Don&apos;t have a PIN? Ask your tour guide.
-            </Text>
+            <Text style={styles.helperText}>{t("guestJoin.helper")}</Text>
 
             <Pressable
               style={[
@@ -136,7 +132,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
                   isDisabled && styles.buttonTextDisabled,
                 ]}
               >
-                {loading ? "Joining…" : "Join Tour"}
+                {loading ? t("guestJoin.joining") : t("guestJoin.join")}
               </Text>
             </Pressable>
           </View>

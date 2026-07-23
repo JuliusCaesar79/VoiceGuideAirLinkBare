@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { apiStartSession } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
@@ -30,6 +31,7 @@ export default function GuideDashboardScreen({
   onStartTour,
   onBack,
 }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,9 +42,7 @@ export default function GuideDashboardScreen({
     setError(null);
 
     if (!licenseCode) {
-      setError(
-        "Missing active license. Please activate your license again from the home screen."
-      );
+      setError(t("guideDashboard.errorMissingLicense"));
       return;
     }
 
@@ -58,13 +58,13 @@ export default function GuideDashboardScreen({
       setCurrentSessionId(sessionId);
 
       Alert.alert(
-        "Tour started",
-        `Session started successfully.\nPIN: ${pin}\nMax guests: ${maxGuests}`
+        t("guideDashboard.successTitle"),
+        t("guideDashboard.successBody", { pin, maxGuests })
       );
 
       onStartTour(pin, sessionId);
     } catch (err: any) {
-      setError(err?.message || "Unable to start a new tour at the moment.");
+      setError(err?.message || t("guideDashboard.errorGeneric"));
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export default function GuideDashboardScreen({
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           style={styles.backBtn}
         >
-          <Text style={styles.backText}>← Back to Home</Text>
+          <Text style={styles.backText}>{t("common.backToHome")}</Text>
         </Pressable>
       </View>
 
@@ -93,20 +93,17 @@ export default function GuideDashboardScreen({
         <View style={styles.main}>
           {/* TITLE */}
           <View style={styles.titleBlock}>
-            <Text style={styles.title}>Guide Dashboard</Text>
-            <Text style={styles.subtitle}>
-              Check your license and start a new tour.
-            </Text>
+            <Text style={styles.title}>{t("guideDashboard.title")}</Text>
+            <Text style={styles.subtitle}>{t("guideDashboard.subtitle")}</Text>
           </View>
 
           {/* LICENSE CARD */}
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>Active License</Text>
-            <Text style={styles.cardValue}>Up to {maxGuests} guests</Text>
-            <Text style={styles.cardHelper}>
-              This is the maximum number of guests allowed for your current
-              license.
+            <Text style={styles.cardLabel}>{t("guideDashboard.cardLabel")}</Text>
+            <Text style={styles.cardValue}>
+              {t("guideDashboard.cardValue", { maxGuests })}
             </Text>
+            <Text style={styles.cardHelper}>{t("guideDashboard.cardHelper")}</Text>
           </View>
 
           {/* ACTIONS */}
@@ -119,7 +116,7 @@ export default function GuideDashboardScreen({
               disabled={isDisabled}
             >
               <Text style={styles.buttonPrimaryText}>
-                {loading ? "Starting…" : "Start New Tour"}
+                {loading ? t("guideDashboard.starting") : t("guideDashboard.startTour")}
               </Text>
             </Pressable>
           </View>
@@ -127,17 +124,17 @@ export default function GuideDashboardScreen({
           {/* CURRENT SESSION INFO (PIN) */}
           {currentPin && (
             <View style={styles.sessionCard}>
-              <Text style={styles.sessionLabel}>Current Tour PIN</Text>
+              <Text style={styles.sessionLabel}>{t("guideDashboard.sessionLabel")}</Text>
               <Text style={styles.sessionPin}>{currentPin}</Text>
 
               {currentSessionId && (
                 <Text style={styles.sessionHelper}>
-                  Session ID: {currentSessionId}
+                  {t("guideDashboard.sessionIdLine", { id: currentSessionId })}
                 </Text>
               )}
 
               <Text style={styles.sessionHelper}>
-                Share this PIN with your guests so they can join the tour.
+                {t("guideDashboard.sessionHelper")}
               </Text>
             </View>
           )}

@@ -10,12 +10,16 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-navigation/native": "^7.1.22",
     "@react-navigation/native-stack": "^7.8.1",
     "@react-navigation/stack": "^7.6.8",
+    "i18next": "^26.3.6",
     "react": "18.3.1",
+    "react-i18next": "^17.0.11",
     "react-native": "0.77.0",
     "react-native-agora": "4.5.3",
+    "react-native-localize": "^3.7.0",
     "react-native-safe-area-context": "^5.6.2",
     "react-native-screens": "^4.20.0"
   },
@@ -23,16 +27,13 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-
     "@react-native-community/cli": "^15.0.1",
     "@react-native-community/cli-platform-android": "^15.0.1",
     "@react-native-community/cli-platform-ios": "^15.0.1",
-
     "@react-native/babel-preset": "0.77.0",
     "@react-native/eslint-config": "0.77.0",
     "@react-native/metro-config": "0.77.0",
     "@react-native/typescript-config": "0.77.0",
-
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",

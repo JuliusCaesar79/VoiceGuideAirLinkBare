@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { apiActivateLicense } from "../config/api";
 import { colors, fontSize, fontWeight } from "../theme";
@@ -24,6 +25,7 @@ type Props = {
 };
 
 export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
+  const { t } = useTranslation();
   const [licenseCode, setLicenseCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
     setError(null);
 
     if (!trimmed) {
-      setError("Please enter your license code.");
+      setError(t("activateLicense.errorEmpty"));
       return;
     }
 
@@ -45,8 +47,8 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
 
       const remaining =
         typeof res?.remaining_minutes === "number"
-          ? `${res.remaining_minutes} minutes`
-          : "unknown";
+          ? t("activateLicense.remainingMinutes", { minutes: res.remaining_minutes })
+          : t("common.unknown");
 
       const guestsFromApi =
         typeof res?.max_guests === "number" ? res.max_guests : null;
@@ -58,13 +60,17 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
       onActivated({ code: finalCode, maxGuests: guestsFromApi });
 
       Alert.alert(
-        "License activated",
-        `Code: ${finalCode}\nRemaining time: ${remaining}${
-          guestsFromApi ? `\nMax guests: ${guestsFromApi}` : ""
-        }`
+        t("activateLicense.successTitle"),
+        t("activateLicense.successBody", {
+          code: finalCode,
+          remaining,
+          guestsLine: guestsFromApi
+            ? t("activateLicense.maxGuestsLine", { maxGuests: guestsFromApi })
+            : "",
+        })
       );
     } catch (err: any) {
-      setError(err?.message || "Unable to activate license at the moment.");
+      setError(err?.message || t("activateLicense.errorGeneric"));
     } finally {
       setLoading(false);
     }
@@ -81,7 +87,7 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           style={styles.backBtn}
         >
-          <Text style={styles.backText}>← Back to Home</Text>
+          <Text style={styles.backText}>{t("common.backToHome")}</Text>
         </Pressable>
       </View>
 
@@ -95,34 +101,33 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
         >
           {/* MAIN CONTENT */}
           <View style={styles.cardWrap}>
-            <Text style={styles.title}>Activate License</Text>
+            <Text style={styles.title}>{t("activateLicense.title")}</Text>
 
-            <Text style={styles.subtitle}>
-              Enter your Voice Guide AirLink license code to unlock guide mode
-              and start your tours.
-            </Text>
+            <Text style={styles.subtitle}>{t("activateLicense.subtitle")}</Text>
 
             {maxGuests !== null && (
               <View style={styles.capacityCard}>
-                <Text style={styles.capacityLabel}>License capacity</Text>
+                <Text style={styles.capacityLabel}>
+                  {t("activateLicense.capacityLabel")}
+                </Text>
                 <Text style={styles.capacityValue}>
-                  Up to {maxGuests} guests
+                  {t("activateLicense.capacityValue", { maxGuests })}
                 </Text>
                 <Text style={styles.capacityHelper}>
-                  This is the maximum number of guests allowed for this license.
+                  {t("activateLicense.capacityHelper")}
                 </Text>
               </View>
             )}
 
             <TextInput
               style={styles.input}
-              placeholder="License code"
+              placeholder={t("activateLicense.placeholder")}
               placeholderTextColor={colors.gray400}
               autoCapitalize="none"
               autoCorrect={false}
               value={licenseCode}
-              onChangeText={(t) => {
-                setLicenseCode(t);
+              onChangeText={(text) => {
+                setLicenseCode(text);
                 if (error) setError(null);
               }}
             />
@@ -135,15 +140,11 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
               disabled={isDisabled}
             >
               <Text style={styles.buttonText}>
-                {loading ? "Activating…" : "Activate License"}
+                {loading ? t("activateLicense.activating") : t("activateLicense.activate")}
               </Text>
             </Pressable>
 
-            <Text style={styles.helperText}>
-              After activation, this license will be ready to start a live audio
-              session as a guide. You will then receive a PIN to share with your
-              guests.
-            </Text>
+            <Text style={styles.helperText}>{t("activateLicense.helper")}</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -3,8 +3,10 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { colors, fontSize, fontWeight } from "./theme";
+import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguageCode } from "./i18n";
 
 type Props = {
   onGuidePress: () => void;
@@ -17,6 +19,7 @@ const logo = require("../assets/images/logo-voiceguide-airlink.png");
 
 export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
   const insets = useSafeAreaInsets();
+  const { t, i18n } = useTranslation();
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -26,34 +29,28 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
           {/* TOP: Logo + Title */}
           <View style={styles.topSection}>
             <Image source={logo} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.appName}>Voice Guide AirLink</Text>
-            <Text style={styles.tagline}>
-              Wireless audio for professional guided tours.
-            </Text>
+            <Text style={styles.appName}>{t("home.appName")}</Text>
+            <Text style={styles.tagline}>{t("home.tagline")}</Text>
           </View>
 
           {/* MIDDLE: Role selection */}
           <View style={styles.middleSection}>
-            <Text style={styles.subtitle}>Choose your role</Text>
+            <Text style={styles.subtitle}>{t("home.chooseRole")}</Text>
 
             <Pressable
               style={[styles.buttonBase, styles.buttonGuide]}
               onPress={onGuidePress}
             >
-              <Text style={styles.buttonGuideText}>I am a Guide</Text>
-              <Text style={styles.buttonHelper}>
-                Start a new tour and broadcast your voice.
-              </Text>
+              <Text style={styles.buttonGuideText}>{t("home.guideTitle")}</Text>
+              <Text style={styles.buttonHelper}>{t("home.guideHelper")}</Text>
             </Pressable>
 
             <Pressable
               style={[styles.buttonBase, styles.buttonGuest]}
               onPress={onGuestPress}
             >
-              <Text style={styles.buttonGuestText}>I am a Guest</Text>
-              <Text style={styles.buttonHelperLight}>
-                Join a tour using the PIN from your guide.
-              </Text>
+              <Text style={styles.buttonGuestText}>{t("home.guestTitle")}</Text>
+              <Text style={styles.buttonHelperLight}>{t("home.guestHelper")}</Text>
             </Pressable>
           </View>
         </View>
@@ -66,7 +63,34 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
             { paddingBottom: Math.max(10, insets.bottom + 10) },
           ]}
         >
-          <Text style={styles.footerText}>Powered by Virgilius Labs</Text>
+          {/* LANGUAGE SWITCHER */}
+          <View style={styles.languageRow}>
+            {SUPPORTED_LANGUAGES.map((lang) => {
+              const isActive = i18n.language === lang.code;
+              return (
+                <Pressable
+                  key={lang.code}
+                  onPress={() => setAppLanguage(lang.code as SupportedLanguageCode)}
+                  style={[
+                    styles.languagePill,
+                    isActive && styles.languagePillActive,
+                  ]}
+                  hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                >
+                  <Text
+                    style={[
+                      styles.languagePillText,
+                      isActive && styles.languagePillTextActive,
+                    ]}
+                  >
+                    {lang.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Text style={styles.footerText}>{t("home.footer")}</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -178,5 +202,28 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.gray400,
     textAlign: "center",
+  },
+
+  languageRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
+  languagePill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    marginHorizontal: 3,
+  },
+  languagePillActive: {
+    backgroundColor: colors.highlightYellow,
+  },
+  languagePillText: {
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.bold,
+    color: colors.gray400,
+  },
+  languagePillTextActive: {
+    color: colors.brandBlack,
   },
 });

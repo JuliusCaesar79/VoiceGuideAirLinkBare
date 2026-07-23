@@ -22,6 +22,8 @@ import GuideDashboardScreen from "./app/screens/guide/GuideDashboardScreen";
 import GuideTourScreen from "./app/screens/guide/GuideTourScreen";
 import GuestTourScreen from "./app/screens/guest/GuestTourScreen";
 import { apiEndSession } from "./app/config/api";
+import i18n, { initI18n } from "./app/i18n";
+import { colors } from "./app/theme";
 
 const { VoiceGuideForeground } = NativeModules as any;
 
@@ -50,12 +52,11 @@ async function requestMicPermission(): Promise<boolean> {
     const result = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       {
-        title: "Microphone permission",
-        message:
-          "VoiceGuide AirLink needs access to the microphone to start the background audio service.",
-        buttonNeutral: "Ask later",
-        buttonNegative: "Cancel",
-        buttonPositive: "OK",
+        title: i18n.t("permissions.micTitle"),
+        message: i18n.t("permissions.micMessage"),
+        buttonNeutral: i18n.t("permissions.askLater"),
+        buttonNegative: i18n.t("common.cancel"),
+        buttonPositive: i18n.t("common.ok"),
       }
     );
 
@@ -63,14 +64,14 @@ async function requestMicPermission(): Promise<boolean> {
       return true;
     } else {
       Alert.alert(
-        "Permission required",
-        "Without microphone permission the service cannot be started."
+        i18n.t("permissions.requiredTitle"),
+        i18n.t("permissions.requiredMessage")
       );
       return false;
     }
   } catch (err) {
     console.warn("Error requesting microphone permission:", err);
-    Alert.alert("Error", "Unable to request microphone permission.");
+    Alert.alert(i18n.t("common.error"), i18n.t("permissions.errorRequestMic"));
     return false;
   }
 }
@@ -81,7 +82,7 @@ async function requestMicPermission(): Promise<boolean> {
 function ensureNativeModule(): boolean {
   if (!VoiceGuideForeground) {
     console.log("NativeModules:", NativeModules);
-    Alert.alert("Error", "Native module VoiceGuideForeground not found");
+    Alert.alert(i18n.t("common.error"), i18n.t("permissions.nativeModuleMissing"));
     return false;
   }
   return true;
@@ -97,7 +98,7 @@ async function startGuideBroadcast(channelName: string | null) {
   if (!ensureNativeModule()) return;
 
   if (!channelName) {
-    Alert.alert("Error", "Missing audio channel (PIN) for guide broadcast.");
+    Alert.alert(i18n.t("common.error"), i18n.t("permissions.missingChannelGuide"));
     return;
   }
 
@@ -105,7 +106,7 @@ async function startGuideBroadcast(channelName: string | null) {
     VoiceGuideForeground.startGuideBroadcast(channelName, null);
   } catch (e) {
     console.error("Error startGuideBroadcast:", e);
-    Alert.alert("Error", String(e));
+    Alert.alert(i18n.t("common.error"), String(e));
   }
 }
 
@@ -119,7 +120,7 @@ async function startGuestListening(channelName: string | null) {
   if (!ensureNativeModule()) return;
 
   if (!channelName) {
-    Alert.alert("Error", "Missing audio channel (PIN) for guest listening.");
+    Alert.alert(i18n.t("common.error"), i18n.t("permissions.missingChannelGuest"));
     return;
   }
 
@@ -127,7 +128,7 @@ async function startGuestListening(channelName: string | null) {
     VoiceGuideForeground.startGuestListening(channelName, null);
   } catch (e) {
     console.error("Error startGuestListening:", e);
-    Alert.alert("Error", String(e));
+    Alert.alert(i18n.t("common.error"), String(e));
   }
 }
 
@@ -136,14 +137,14 @@ async function startGuestListening(channelName: string | null) {
  */
 function stopForegroundService() {
   if (!VoiceGuideForeground) {
-    Alert.alert("Error", "Native module VoiceGuideForeground not found");
+    Alert.alert(i18n.t("common.error"), i18n.t("permissions.nativeModuleMissing"));
     return;
   }
   try {
     VoiceGuideForeground.stopService();
   } catch (e) {
     console.error("Error stopService:", e);
-    Alert.alert("Error", String(e));
+    Alert.alert(i18n.t("common.error"), String(e));
   }
 }
 
@@ -406,6 +407,16 @@ function AppInner(): React.JSX.Element {
 }
 
 export default function App(): React.JSX.Element {
+  const [i18nReady, setI18nReady] = useState(false);
+
+  React.useEffect(() => {
+    initI18n().then(() => setI18nReady(true));
+  }, []);
+
+  if (!i18nReady) {
+    return <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }} />;
+  }
+
   return (
     <SafeAreaProvider>
       <AppInner />
