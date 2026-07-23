@@ -8,7 +8,6 @@ import {
   Pressable,
   StyleSheet,
   NativeModules,
-  Alert,
   PermissionsAndroid,
   Platform,
 } from "react-native";
@@ -24,6 +23,8 @@ import GuestTourScreen from "./app/screens/guest/GuestTourScreen";
 import { apiEndSession } from "./app/config/api";
 import i18n, { initI18n } from "./app/i18n";
 import { colors } from "./app/theme";
+import { showAlert } from "./app/components/alertBridge";
+import CustomAlertHost from "./app/components/CustomAlertHost";
 
 const { VoiceGuideForeground } = NativeModules as any;
 
@@ -63,7 +64,7 @@ async function requestMicPermission(): Promise<boolean> {
     if (result === PermissionsAndroid.RESULTS.GRANTED) {
       return true;
     } else {
-      Alert.alert(
+      showAlert(
         i18n.t("permissions.requiredTitle"),
         i18n.t("permissions.requiredMessage")
       );
@@ -71,7 +72,7 @@ async function requestMicPermission(): Promise<boolean> {
     }
   } catch (err) {
     console.warn("Error requesting microphone permission:", err);
-    Alert.alert(i18n.t("common.error"), i18n.t("permissions.errorRequestMic"));
+    showAlert(i18n.t("common.error"), i18n.t("permissions.errorRequestMic"));
     return false;
   }
 }
@@ -82,7 +83,7 @@ async function requestMicPermission(): Promise<boolean> {
 function ensureNativeModule(): boolean {
   if (!VoiceGuideForeground) {
     console.log("NativeModules:", NativeModules);
-    Alert.alert(i18n.t("common.error"), i18n.t("permissions.nativeModuleMissing"));
+    showAlert(i18n.t("common.error"), i18n.t("permissions.nativeModuleMissing"));
     return false;
   }
   return true;
@@ -98,7 +99,7 @@ async function startGuideBroadcast(channelName: string | null) {
   if (!ensureNativeModule()) return;
 
   if (!channelName) {
-    Alert.alert(i18n.t("common.error"), i18n.t("permissions.missingChannelGuide"));
+    showAlert(i18n.t("common.error"), i18n.t("permissions.missingChannelGuide"));
     return;
   }
 
@@ -106,7 +107,7 @@ async function startGuideBroadcast(channelName: string | null) {
     VoiceGuideForeground.startGuideBroadcast(channelName, null);
   } catch (e) {
     console.error("Error startGuideBroadcast:", e);
-    Alert.alert(i18n.t("common.error"), String(e));
+    showAlert(i18n.t("common.error"), String(e));
   }
 }
 
@@ -120,7 +121,7 @@ async function startGuestListening(channelName: string | null) {
   if (!ensureNativeModule()) return;
 
   if (!channelName) {
-    Alert.alert(i18n.t("common.error"), i18n.t("permissions.missingChannelGuest"));
+    showAlert(i18n.t("common.error"), i18n.t("permissions.missingChannelGuest"));
     return;
   }
 
@@ -128,7 +129,7 @@ async function startGuestListening(channelName: string | null) {
     VoiceGuideForeground.startGuestListening(channelName, null);
   } catch (e) {
     console.error("Error startGuestListening:", e);
-    Alert.alert(i18n.t("common.error"), String(e));
+    showAlert(i18n.t("common.error"), String(e));
   }
 }
 
@@ -137,14 +138,14 @@ async function startGuestListening(channelName: string | null) {
  */
 function stopForegroundService() {
   if (!VoiceGuideForeground) {
-    Alert.alert(i18n.t("common.error"), i18n.t("permissions.nativeModuleMissing"));
+    showAlert(i18n.t("common.error"), i18n.t("permissions.nativeModuleMissing"));
     return;
   }
   try {
     VoiceGuideForeground.stopService();
   } catch (e) {
     console.error("Error stopService:", e);
-    Alert.alert(i18n.t("common.error"), String(e));
+    showAlert(i18n.t("common.error"), String(e));
   }
 }
 
@@ -157,7 +158,7 @@ function NativeDebugScreen(props: { onBack: () => void }) {
 
   const handleStartGuide = async () => {
     if (active) {
-      Alert.alert(
+      showAlert(
         "Service already running",
         "Stop the current session with STOP ALL before changing role."
       );
@@ -170,7 +171,7 @@ function NativeDebugScreen(props: { onBack: () => void }) {
 
   const handleStartGuest = async () => {
     if (active) {
-      Alert.alert(
+      showAlert(
         "Service already running",
         "Stop the current session with STOP ALL before changing role."
       );
@@ -420,6 +421,7 @@ export default function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
       <AppInner />
+      <CustomAlertHost />
     </SafeAreaProvider>
   );
 }

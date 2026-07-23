@@ -178,8 +178,8 @@ class VoiceGuideForegroundModule(
             val stopIntent = Intent(context, VoiceGuideForegroundService::class.java).apply {
                 action = VoiceGuideForegroundService.ACTION_STOP
             }
-            Log.d(TAG, "stopService() → invio ACTION_STOP via startForegroundService")
-            ContextCompat.startForegroundService(context, stopIntent)
+            Log.d(TAG, "stopService() → invio ACTION_STOP via startService")
+            context.startService(stopIntent)
         } catch (e: Exception) {
             Log.e(TAG, "Errore invio ACTION_STOP", e)
         }

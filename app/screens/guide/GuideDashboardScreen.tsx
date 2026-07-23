@@ -6,7 +6,6 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Alert,
   ScrollView,
 } from "react-native";
 
@@ -15,6 +14,7 @@ import { useTranslation } from "react-i18next";
 
 import { apiStartSession } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
+import { showAlert } from "../../components/alertBridge";
 
 type Props = {
   maxGuests: number;
@@ -57,7 +57,7 @@ export default function GuideDashboardScreen({
       setCurrentPin(pin);
       setCurrentSessionId(sessionId);
 
-      Alert.alert(
+      showAlert(
         t("guideDashboard.successTitle"),
         t("guideDashboard.successBody", { pin, maxGuests })
       );

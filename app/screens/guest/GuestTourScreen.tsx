@@ -6,13 +6,13 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Alert,
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { apiGetSessionStatus, apiLeaveListener } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
+import { showAlert } from "../../components/alertBridge";
 
 type Props = {
   pin: string;
@@ -85,7 +85,7 @@ export default function GuestTourScreen({
   };
 
   const confirmLeave = () => {
-    Alert.alert(t("guestTour.confirmLeaveTitle"), t("guestTour.confirmLeaveBody"), [
+    showAlert(t("guestTour.confirmLeaveTitle"), t("guestTour.confirmLeaveBody"), [
       { text: t("common.cancel"), style: "cancel" },
       { text: t("guestTour.leaveTour"), style: "destructive", onPress: handleLeave },
     ]);
@@ -111,7 +111,7 @@ export default function GuestTourScreen({
         setIsListening(false);
       }
 
-      Alert.alert(t("guestTour.endedTitle"), t("guestTour.endedBody"));
+      showAlert(t("guestTour.endedTitle"), t("guestTour.endedBody"));
       onLeave();
     };
 

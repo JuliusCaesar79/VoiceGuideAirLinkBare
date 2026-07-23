@@ -9,7 +9,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ScrollView,
 } from "react-native";
 
@@ -18,6 +17,7 @@ import { useTranslation } from "react-i18next";
 
 import { apiActivateLicense } from "../config/api";
 import { colors, fontSize, fontWeight } from "../theme";
+import { showAlert } from "../components/alertBridge";
 
 type Props = {
   onActivated: (payload: { code: string; maxGuests?: number | null }) => void;
@@ -59,7 +59,7 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
 
       onActivated({ code: finalCode, maxGuests: guestsFromApi });
 
-      Alert.alert(
+      showAlert(
         t("activateLicense.successTitle"),
         t("activateLicense.successBody", {
           code: finalCode,

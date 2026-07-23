@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -18,6 +17,7 @@ import { useTranslation } from "react-i18next";
 
 import { apiJoinPin } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
+import { showAlert } from "../../components/alertBridge";
 
 type Props = {
   onJoin: (payload: {
@@ -50,7 +50,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
       const listenerId: string | null = res?.id ?? null;
       const sessionId: string | null = res?.session_id ?? null;
 
-      Alert.alert(
+      showAlert(
         t("guestJoin.successTitle"),
         t("guestJoin.successBody", {
           pin: trimmed,

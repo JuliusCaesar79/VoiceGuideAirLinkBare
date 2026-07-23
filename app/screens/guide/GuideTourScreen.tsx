@@ -6,13 +6,13 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Alert,
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { apiGetSessionStatus } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
+import { showAlert } from "../../components/alertBridge";
 
 type Props = {
   sessionId: string;
@@ -66,7 +66,7 @@ export default function GuideTourScreen({
   };
 
   const confirmEndTour = () => {
-    Alert.alert(
+    showAlert(
       t("guideTour.confirmEndTitle"),
       t("guideTour.confirmEndBody"),
       [
@@ -99,7 +99,7 @@ export default function GuideTourScreen({
         setIsBroadcasting(false);
       }
 
-      Alert.alert(t("guideTour.endedTitle"), t("guideTour.endedBody"));
+      showAlert(t("guideTour.endedTitle"), t("guideTour.endedBody"));
       onEnd();
     };
 
