@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { apiGetSessionStatus } from "../../config/api";
+import { colors, fontSize, fontWeight } from "../../theme";
 
 type Props = {
   sessionId: string;
@@ -20,9 +21,6 @@ type Props = {
   onStopBroadcast: () => void;
   onEnd: () => void;
 };
-
-const BRAND_YELLOW = "#FFC226";
-const BRAND_BLACK = "#000000";
 
 export default function GuideTourScreen({
   sessionId,
@@ -144,7 +142,7 @@ export default function GuideTourScreen({
   }, [sessionId, isBroadcasting, onEnd, onStopBroadcast]);
 
   const statusLabel = isBroadcasting ? "ON AIR" : "READY";
-  const statusColor = isBroadcasting ? "#16A34A" : "#9CA3AF";
+  const statusColor = isBroadcasting ? colors.success : colors.gray400;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom", "left", "right"]}>
@@ -233,7 +231,7 @@ export default function GuideTourScreen({
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
   },
 
   container: {
@@ -250,15 +248,15 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 8,
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     textAlign: "center",
     lineHeight: 20,
   },
@@ -280,8 +278,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   statusText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.bold,
     letterSpacing: 0.8,
   },
 
@@ -289,8 +287,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: BRAND_YELLOW,
-    backgroundColor: "#FFF8E5",
+    borderColor: colors.brandYellow,
+    backgroundColor: colors.highlightYellow,
     paddingVertical: 16,
     paddingHorizontal: 16,
   },
@@ -316,25 +314,25 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
   },
   value: {
     marginTop: 6,
-    fontSize: 26,
-    fontWeight: "900",
-    color: BRAND_BLACK,
+    fontSize: fontSize.display,
+    fontWeight: fontWeight.black,
+    color: colors.brandBlack,
   },
   countdownValue: {
     marginTop: 6,
-    fontSize: 30,
-    fontWeight: "900",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.black,
+    color: colors.brandBlack,
   },
   helperText: {
     marginTop: 6,
-    fontSize: 11,
-    color: "#9CA3AF",
+    fontSize: fontSize.xs,
+    color: colors.gray400,
     textAlign: "center",
     lineHeight: 15,
   },
@@ -348,48 +346,48 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingTop: 12,
     paddingBottom: 16, // SafeAreaView edges bottom adds extra when needed
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.06)",
+    borderTopColor: colors.dockBorder,
   },
 
   broadcastButton: {
-    backgroundColor: BRAND_YELLOW,
+    backgroundColor: colors.brandYellow,
     paddingVertical: 18,
     borderRadius: 18,
     alignItems: "center",
-    shadowColor: "#000000",
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 2,
   },
   broadcastButtonActive: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: BRAND_BLACK,
+    borderColor: colors.brandBlack,
     shadowOpacity: 0.0,
     elevation: 0,
   },
   broadcastButtonText: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
   },
   broadcastButtonTextActive: {
-    color: BRAND_BLACK,
+    color: colors.brandBlack,
   },
 
   endButton: {
     marginTop: 12,
-    backgroundColor: "#DC2626",
+    backgroundColor: colors.danger,
     borderRadius: 16,
     paddingVertical: 14,
     alignItems: "center",
   },
   endButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "800",
+    color: colors.white,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.extraBold,
   },
 });

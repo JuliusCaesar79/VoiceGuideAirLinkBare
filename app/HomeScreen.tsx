@@ -4,6 +4,8 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { colors, fontSize, fontWeight } from "./theme";
+
 type Props = {
   onGuidePress: () => void;
   onGuestPress: () => void;
@@ -12,9 +14,6 @@ type Props = {
 // Make sure this file exists:
 // /assets/images/logo-voiceguide-airlink.png
 const logo = require("../assets/images/logo-voiceguide-airlink.png");
-
-const BRAND_YELLOW = "#FFC226";
-const BRAND_BLACK = "#000000";
 
 export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
   const insets = useSafeAreaInsets();
@@ -77,12 +76,12 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
   },
 
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     paddingHorizontal: 32,
     paddingTop: 18, // slightly less: gives a more balanced vertical rhythm
   },
@@ -104,15 +103,15 @@ const styles = StyleSheet.create({
   },
   appName: {
     marginTop: 6,
-    fontSize: 20,
-    fontWeight: "700",
-    color: BRAND_BLACK,
+    fontSize: fontSize.xxl,
+    fontWeight: fontWeight.bold,
+    color: colors.brandBlack,
     textAlign: "center",
   },
   tagline: {
     marginTop: 4,
-    fontSize: 13,
-    color: "#6B7280",
+    fontSize: fontSize.base,
+    color: colors.gray500,
     textAlign: "center",
   },
 
@@ -120,8 +119,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   subtitle: {
-    fontSize: 18,
-    color: "#444444",
+    fontSize: fontSize.xl,
+    color: colors.gray700,
     marginBottom: 14, // a touch more breathing room
   },
 
@@ -135,39 +134,39 @@ const styles = StyleSheet.create({
     marginVertical: 7,
   },
   buttonGuide: {
-    backgroundColor: BRAND_YELLOW,
-    shadowColor: "#000000",
+    backgroundColor: colors.brandYellow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.14,
     shadowRadius: 4,
     elevation: 2,
   },
   buttonGuest: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: BRAND_YELLOW,
+    borderColor: colors.brandYellow,
   },
 
   buttonGuideText: {
-    color: BRAND_BLACK,
-    fontSize: 18,
-    fontWeight: "700",
+    color: colors.brandBlack,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
   },
   buttonGuestText: {
-    color: BRAND_YELLOW,
-    fontSize: 18,
-    fontWeight: "700",
+    color: colors.brandYellow,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
   },
   buttonHelper: {
     marginTop: 4,
-    fontSize: 12,
-    color: "#111827",
+    fontSize: fontSize.sm,
+    color: colors.gray900,
     textAlign: "center",
   },
   buttonHelperLight: {
     marginTop: 4,
-    fontSize: 12,
-    color: "#6B7280",
+    fontSize: fontSize.sm,
+    color: colors.gray500,
     textAlign: "center",
   },
 
@@ -176,8 +175,8 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   footerText: {
-    fontSize: 12,
-    color: "#9CA3AF",
+    fontSize: fontSize.sm,
+    color: colors.gray400,
     textAlign: "center",
   },
 });

@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { apiStartSession } from "../../config/api";
+import { colors, fontSize, fontWeight } from "../../theme";
 
 type Props = {
   maxGuests: number;
@@ -22,9 +23,6 @@ type Props = {
   onDebug?: () => void;
   onBack: () => void;
 };
-
-const BRAND_YELLOW = "#FFC226";
-const BRAND_BLACK = "#000000";
 
 export default function GuideDashboardScreen({
   maxGuests,
@@ -152,13 +150,13 @@ export default function GuideDashboardScreen({
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
   },
 
   // Header spinto leggermente in basso, come “standard” campagna UI
   header: {
     paddingHorizontal: 32,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     minHeight: 64,
     justifyContent: "flex-end",
     paddingBottom: 8,
@@ -168,8 +166,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   backText: {
-    color: BRAND_BLACK,
-    fontSize: 13,
+    color: colors.brandBlack,
+    fontSize: fontSize.base,
   },
 
   scrollContent: {
@@ -189,14 +187,14 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     textAlign: "center",
     marginTop: 8,
     lineHeight: 20,
@@ -204,8 +202,8 @@ const styles = StyleSheet.create({
 
   card: {
     width: "100%",
-    backgroundColor: "#FFF8E5",
-    borderColor: BRAND_YELLOW,
+    backgroundColor: colors.highlightYellow,
+    borderColor: colors.brandYellow,
     borderWidth: 2,
     borderRadius: 16,
     paddingVertical: 18,
@@ -214,19 +212,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   cardLabel: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     marginBottom: 6,
   },
   cardValue: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
   },
   cardHelper: {
     marginTop: 8,
-    fontSize: 12,
-    color: "#9CA3AF",
+    fontSize: fontSize.sm,
+    color: colors.gray400,
     textAlign: "center",
     lineHeight: 16,
   },
@@ -237,27 +235,27 @@ const styles = StyleSheet.create({
   },
 
   error: {
-    color: "#DC2626",
-    fontSize: 13,
+    color: colors.danger,
+    fontSize: fontSize.base,
     marginBottom: 10,
     textAlign: "center",
   },
 
   buttonPrimary: {
-    backgroundColor: BRAND_YELLOW,
+    backgroundColor: colors.brandYellow,
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: "center",
-    shadowColor: "#000000",
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 2,
   },
   buttonPrimaryText: {
-    color: BRAND_BLACK,
-    fontSize: 18,
-    fontWeight: "800",
+    color: colors.brandBlack,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.extraBold,
   },
   buttonDisabled: {
     opacity: 0.75,
@@ -270,24 +268,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: BRAND_BLACK,
-    backgroundColor: "#F9FAFB",
+    borderColor: colors.brandBlack,
+    backgroundColor: colors.gray50,
     alignItems: "center",
   },
   sessionLabel: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     marginBottom: 4,
   },
   sessionPin: {
-    fontSize: 30,
-    fontWeight: "900",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.black,
+    color: colors.brandBlack,
   },
   sessionHelper: {
     marginTop: 6,
-    fontSize: 12,
-    color: "#9CA3AF",
+    fontSize: fontSize.sm,
+    color: colors.gray400,
     textAlign: "center",
     lineHeight: 16,
   },

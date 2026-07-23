@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { apiJoinPin } from "../../config/api";
+import { colors, fontSize, fontWeight } from "../../theme";
 
 type Props = {
   onJoin: (payload: {
@@ -25,9 +26,6 @@ type Props = {
   }) => void;
   onBack: () => void;
 };
-
-const BRAND_YELLOW = "#FFC226";
-const BRAND_BLACK = "#000000";
 
 export default function GuestJoinScreen({ onJoin, onBack }: Props) {
   const [pin, setPin] = useState("");
@@ -106,7 +104,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
             <TextInput
               style={styles.input}
               placeholder="e.g. 006BT9"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.gray400}
               keyboardType="default"
               autoCapitalize="characters"
               value={pin}
@@ -151,7 +149,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
   },
   flex: {
     flex: 1,
@@ -160,7 +158,7 @@ const styles = StyleSheet.create({
   // ⭐ Header standard: spinge giù “Back to Home” senza rischi navbar
   header: {
     paddingHorizontal: 32,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     minHeight: 64,
     justifyContent: "flex-end",
     paddingBottom: 8,
@@ -170,8 +168,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   backText: {
-    fontSize: 13,
-    color: BRAND_BLACK,
+    fontSize: fontSize.base,
+    color: colors.brandBlack,
   },
 
   scrollContent: {
@@ -186,15 +184,15 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
     marginBottom: 10,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     marginBottom: 22,
     textAlign: "center",
     lineHeight: 20,
@@ -203,26 +201,26 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     borderWidth: 2,
-    borderColor: BRAND_YELLOW,
+    borderColor: colors.brandYellow,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 14,
-    fontSize: 20,
+    fontSize: fontSize.xxl,
     textAlign: "center",
     marginBottom: 10,
-    color: BRAND_BLACK,
+    color: colors.brandBlack,
   },
 
   error: {
-    fontSize: 12,
-    color: "#DC2626",
+    fontSize: fontSize.sm,
+    color: colors.danger,
     marginBottom: 10,
     textAlign: "center",
   },
 
   helperText: {
-    fontSize: 12,
-    color: "#9CA3AF",
+    fontSize: fontSize.sm,
+    color: colors.gray400,
     marginBottom: 22,
     textAlign: "center",
     lineHeight: 16,
@@ -234,7 +232,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000000",
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -243,23 +241,23 @@ const styles = StyleSheet.create({
 
   // Stato attivo: giallo pieno
   buttonEnabled: {
-    backgroundColor: BRAND_YELLOW,
+    backgroundColor: colors.brandYellow,
     opacity: 1,
   },
 
   // Stato disabilitato: NON “slavato” giallo, ma neutro elegante
   buttonDisabled: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: colors.gray100,
     shadowOpacity: 0,
     elevation: 0,
   },
 
   buttonText: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
   },
   buttonTextDisabled: {
-    color: "#9CA3AF",
+    color: colors.gray400,
   },
 });

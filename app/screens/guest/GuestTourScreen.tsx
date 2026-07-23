@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { apiGetSessionStatus, apiLeaveListener } from "../../config/api";
+import { colors, fontSize, fontWeight } from "../../theme";
 
 type Props = {
   pin: string;
@@ -20,9 +21,6 @@ type Props = {
   onStartListening: () => void;
   onStopListening: () => void;
 };
-
-const BRAND_YELLOW = "#FFC226";
-const BRAND_BLACK = "#000000";
 
 export default function GuestTourScreen({
   pin,
@@ -154,7 +152,7 @@ export default function GuestTourScreen({
   }, [sessionId, isListening, onStopListening, onLeave]);
 
   const statusLabel = isListening ? "LISTENING" : "READY";
-  const statusColor = isListening ? "#16A34A" : "#9CA3AF";
+  const statusColor = isListening ? colors.success : colors.gray400;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom", "left", "right"]}>
@@ -229,7 +227,7 @@ export default function GuestTourScreen({
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
   },
 
   container: {
@@ -245,15 +243,15 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 8,
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     textAlign: "center",
     lineHeight: 20,
   },
@@ -275,8 +273,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   statusText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.bold,
     letterSpacing: 0.8,
   },
 
@@ -284,30 +282,30 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: BRAND_YELLOW,
-    backgroundColor: "#FFF8E5",
+    borderColor: colors.brandYellow,
+    backgroundColor: colors.highlightYellow,
     paddingVertical: 16,
     paddingHorizontal: 16,
     alignItems: "center",
   },
 
   label: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
   },
 
   pinValue: {
     marginTop: 6,
-    fontSize: 28,
-    fontWeight: "900",
-    color: BRAND_BLACK,
+    fontSize: fontSize.displayLg,
+    fontWeight: fontWeight.black,
+    color: colors.brandBlack,
     letterSpacing: 1,
   },
 
   helperText: {
     marginTop: 8,
-    fontSize: 11,
-    color: "#9CA3AF",
+    fontSize: fontSize.xs,
+    color: colors.gray400,
     textAlign: "center",
     lineHeight: 15,
   },
@@ -315,7 +313,7 @@ const styles = StyleSheet.create({
   dividerHorizontal: {
     height: 1,
     width: "100%",
-    backgroundColor: "rgba(0,0,0,0.10)",
+    backgroundColor: colors.dividerLight,
     marginTop: 14,
     marginBottom: 14,
   },
@@ -326,9 +324,9 @@ const styles = StyleSheet.create({
 
   countdownValue: {
     marginTop: 6,
-    fontSize: 30,
-    fontWeight: "900",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.black,
+    color: colors.brandBlack,
   },
 
   // ✅ Fixed action dock
@@ -336,48 +334,48 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingTop: 12,
     paddingBottom: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.06)",
+    borderTopColor: colors.dockBorder,
   },
 
   listenButton: {
-    backgroundColor: BRAND_YELLOW,
+    backgroundColor: colors.brandYellow,
     paddingVertical: 18,
     borderRadius: 18,
     alignItems: "center",
-    shadowColor: "#000000",
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 2,
   },
   listenButtonActive: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: BRAND_BLACK,
+    borderColor: colors.brandBlack,
     shadowOpacity: 0.0,
     elevation: 0,
   },
   listenButtonText: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
   },
   listenButtonTextActive: {
-    color: BRAND_BLACK,
+    color: colors.brandBlack,
   },
 
   leaveButton: {
     marginTop: 12,
-    backgroundColor: "#DC2626",
+    backgroundColor: colors.danger,
     borderRadius: 16,
     paddingVertical: 14,
     alignItems: "center",
   },
   leaveButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "800",
+    color: colors.white,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.extraBold,
   },
 });

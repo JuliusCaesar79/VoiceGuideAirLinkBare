@@ -16,9 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { apiActivateLicense } from "../config/api";
-
-const BRAND_YELLOW = "#FFC226";
-const BRAND_BLACK = "#000000";
+import { colors, fontSize, fontWeight } from "../theme";
 
 type Props = {
   onActivated: (payload: { code: string; maxGuests?: number | null }) => void;
@@ -119,7 +117,7 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
             <TextInput
               style={styles.input}
               placeholder="License code"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.gray400}
               autoCapitalize="none"
               autoCorrect={false}
               value={licenseCode}
@@ -156,7 +154,7 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
   },
   flex: {
     flex: 1,
@@ -165,7 +163,7 @@ const styles = StyleSheet.create({
   /* HEADER: always pushed down, never glued to top */
   header: {
     paddingHorizontal: 32,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
 
     minHeight: 64,          // ⭐ key line: moves Back to Home down
     justifyContent: "flex-end",
@@ -176,8 +174,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   backText: {
-    fontSize: 13,
-    color: BRAND_BLACK,
+    fontSize: fontSize.base,
+    color: colors.brandBlack,
   },
 
   scrollContent: {
@@ -192,15 +190,15 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.hero,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
     marginBottom: 10,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     marginBottom: 22,
     textAlign: "center",
     lineHeight: 20,
@@ -208,8 +206,8 @@ const styles = StyleSheet.create({
 
   capacityCard: {
     width: "100%",
-    backgroundColor: "#FFF8E5",
-    borderColor: BRAND_YELLOW,
+    backgroundColor: colors.highlightYellow,
+    borderColor: colors.brandYellow,
     borderWidth: 2,
     borderRadius: 16,
     paddingVertical: 16,
@@ -218,19 +216,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   capacityLabel: {
-    fontSize: 14,
-    color: "#6B7280",
+    fontSize: fontSize.md,
+    color: colors.gray500,
     marginBottom: 4,
   },
   capacityValue: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: BRAND_BLACK,
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.extraBold,
+    color: colors.brandBlack,
   },
   capacityHelper: {
     marginTop: 6,
-    fontSize: 12,
-    color: "#9CA3AF",
+    fontSize: fontSize.sm,
+    color: colors.gray400,
     textAlign: "center",
     lineHeight: 16,
   },
@@ -239,16 +237,16 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 14,
     borderWidth: 2,
-    borderColor: BRAND_YELLOW,
+    borderColor: colors.brandYellow,
     paddingHorizontal: 16,
     paddingVertical: 13,
-    fontSize: 16,
-    color: BRAND_BLACK,
+    fontSize: fontSize.lg,
+    color: colors.brandBlack,
     marginBottom: 10,
   },
   error: {
-    color: "#DC2626",
-    fontSize: 13,
+    color: colors.danger,
+    fontSize: fontSize.base,
     marginBottom: 10,
     textAlign: "center",
   },
@@ -258,9 +256,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: "center",
-    backgroundColor: BRAND_YELLOW,
+    backgroundColor: colors.brandYellow,
     marginTop: 2,
-    shadowColor: "#000000",
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -270,14 +268,14 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
   buttonText: {
-    color: BRAND_BLACK,
-    fontWeight: "800",
-    fontSize: 16,
+    color: colors.brandBlack,
+    fontWeight: fontWeight.extraBold,
+    fontSize: fontSize.lg,
   },
 
   helperText: {
-    fontSize: 12,
-    color: "#9CA3AF",
+    fontSize: fontSize.sm,
+    color: colors.gray400,
     marginTop: 16,
     textAlign: "center",
     lineHeight: 16,
