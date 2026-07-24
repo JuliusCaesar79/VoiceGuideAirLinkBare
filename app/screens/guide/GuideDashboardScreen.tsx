@@ -1,12 +1,13 @@
 // app/screens/guide/GuideDashboardScreen.tsx
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
   ScrollView,
+  Animated,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,6 +26,15 @@ type Props = {
   onBack: () => void;
 };
 
+function useSpring() {
+  const scale = useRef(new Animated.Value(1)).current;
+  const onPressIn = () =>
+    Animated.timing(scale, { toValue: 0.93, duration: 90, useNativeDriver: true }).start();
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 9 }).start();
+  return { scale, onPressIn, onPressOut };
+}
+
 export default function GuideDashboardScreen({
   maxGuests,
   licenseCode,
@@ -34,6 +44,7 @@ export default function GuideDashboardScreen({
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const buttonSpring = useSpring();
 
   const [currentPin, setCurrentPin] = useState<string | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -110,15 +121,22 @@ export default function GuideDashboardScreen({
           <View style={styles.actions}>
             {error && <Text style={styles.error}>{error}</Text>}
 
-            <Pressable
-              style={[styles.buttonPrimary, isDisabled && styles.buttonDisabled]}
-              onPress={handleStartSession}
-              disabled={isDisabled}
-            >
-              <Text style={styles.buttonPrimaryText}>
-                {loading ? t("guideDashboard.starting") : t("guideDashboard.startTour")}
-              </Text>
-            </Pressable>
+            <Animated.View style={{ width: "100%", transform: [{ scale: buttonSpring.scale }] }}>
+              <View style={styles.shadowStack}>
+                <View style={[styles.fakeShadow, isDisabled && styles.fakeShadowDisabled]} />
+                <Pressable
+                  style={[styles.buttonPrimary, isDisabled && styles.buttonDisabled]}
+                  onPress={handleStartSession}
+                  onPressIn={buttonSpring.onPressIn}
+                  onPressOut={buttonSpring.onPressOut}
+                  disabled={isDisabled}
+                >
+                  <Text style={styles.buttonPrimaryText}>
+                    {loading ? t("guideDashboard.starting") : t("guideDashboard.startTour")}
+                  </Text>
+                </Pressable>
+              </View>
+            </Animated.View>
           </View>
 
           {/* CURRENT SESSION INFO (PIN) */}
@@ -238,16 +256,28 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  // Flat offset "fake shadow" instead of native elevation/shadow* — Android's
+  // native drop shadow rendered an unreliable corner glitch (see HomeScreen).
+  shadowStack: {
+    position: "relative",
+  },
+  fakeShadow: {
+    position: "absolute",
+    top: 5,
+    left: 0,
+    right: 0,
+    bottom: -5,
+    borderRadius: 16,
+    backgroundColor: "rgba(0,0,0,0.16)",
+  },
+  fakeShadowDisabled: {
+    opacity: 0.6,
+  },
   buttonPrimary: {
     backgroundColor: colors.brandYellow,
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: "center",
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
   },
   buttonPrimaryText: {
     color: colors.brandBlack,
