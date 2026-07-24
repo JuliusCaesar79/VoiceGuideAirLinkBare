@@ -1,18 +1,20 @@
 // app/screens/guide/GuideTourScreen.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
   ScrollView,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { apiGetSessionStatus } from "../../config/api";
 import { colors, fontSize, fontWeight } from "../../theme";
 import { showAlert } from "../../components/alertBridge";
+import SlideToConfirm from "../../components/SlideToConfirm";
 
 type Props = {
   sessionId: string;
@@ -22,6 +24,15 @@ type Props = {
   onStopBroadcast: () => void;
   onEnd: () => void;
 };
+
+function useSpring() {
+  const scale = useRef(new Animated.Value(1)).current;
+  const onPressIn = () =>
+    Animated.timing(scale, { toValue: 0.93, duration: 90, useNativeDriver: true }).start();
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 9 }).start();
+  return { scale, onPressIn, onPressOut };
+}
 
 export default function GuideTourScreen({
   sessionId,
@@ -34,6 +45,7 @@ export default function GuideTourScreen({
   const { t } = useTranslation();
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [currentGuests, setCurrentGuests] = useState(0);
+  const broadcastSpring = useSpring();
 
   // Tempo residuo in secondi (verità locale, riallineata dal backend)
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
@@ -63,17 +75,6 @@ export default function GuideTourScreen({
       onStopBroadcast();
       setIsBroadcasting(false);
     }
-  };
-
-  const confirmEndTour = () => {
-    showAlert(
-      t("guideTour.confirmEndTitle"),
-      t("guideTour.confirmEndBody"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        { text: t("guideTour.endTour"), style: "destructive", onPress: onEnd },
-      ]
-    );
   };
 
   /**
@@ -198,26 +199,42 @@ export default function GuideTourScreen({
 
       {/* ACTION DOCK (fixed, safe above navbar) */}
       <View style={styles.dock}>
-        <Pressable
-          style={[
-            styles.broadcastButton,
-            isBroadcasting && styles.broadcastButtonActive,
-          ]}
-          onPress={handleToggleBroadcast}
-        >
-          <Text
-            style={[
-              styles.broadcastButtonText,
-              isBroadcasting && styles.broadcastButtonTextActive,
-            ]}
-          >
-            {isBroadcasting ? t("guideTour.stopBroadcasting") : t("guideTour.startBroadcasting")}
-          </Text>
-        </Pressable>
+        <Animated.View style={{ transform: [{ scale: broadcastSpring.scale }] }}>
+          <View style={styles.shadowStack}>
+            <View
+              style={[
+                styles.fakeShadow,
+                isBroadcasting && styles.fakeShadowLight,
+              ]}
+            />
+            <Pressable
+              style={[
+                styles.broadcastButton,
+                isBroadcasting && styles.broadcastButtonActive,
+              ]}
+              onPress={handleToggleBroadcast}
+              onPressIn={broadcastSpring.onPressIn}
+              onPressOut={broadcastSpring.onPressOut}
+            >
+              <Text
+                style={[
+                  styles.broadcastButtonText,
+                  isBroadcasting && styles.broadcastButtonTextActive,
+                ]}
+              >
+                {isBroadcasting ? t("guideTour.stopBroadcasting") : t("guideTour.startBroadcasting")}
+              </Text>
+            </Pressable>
+          </View>
+        </Animated.View>
 
-        <Pressable style={styles.endButton} onPress={confirmEndTour}>
-          <Text style={styles.endButtonText}>{t("guideTour.endTour")}</Text>
-        </Pressable>
+        <View style={styles.endSlideWrap}>
+          <SlideToConfirm
+            label={t("guideTour.endTour")}
+            hint={t("guideTour.endTourSlideHint")}
+            onConfirm={onEnd}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -346,23 +363,33 @@ const styles = StyleSheet.create({
     borderTopColor: colors.dockBorder,
   },
 
+  // Flat offset "fake shadow" instead of native elevation/shadow* — Android's
+  // native drop shadow rendered an unreliable corner glitch (see HomeScreen).
+  shadowStack: {
+    position: "relative",
+  },
+  fakeShadow: {
+    position: "absolute",
+    top: 5,
+    left: 0,
+    right: 0,
+    bottom: -5,
+    borderRadius: 18,
+    backgroundColor: "rgba(0,0,0,0.16)",
+  },
+  fakeShadowLight: {
+    backgroundColor: "rgba(0,0,0,0.08)",
+  },
   broadcastButton: {
     backgroundColor: colors.brandYellow,
     paddingVertical: 18,
     borderRadius: 18,
     alignItems: "center",
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
   },
   broadcastButtonActive: {
     backgroundColor: colors.white,
     borderWidth: 2,
     borderColor: colors.brandBlack,
-    shadowOpacity: 0.0,
-    elevation: 0,
   },
   broadcastButtonText: {
     fontSize: fontSize.xl,
@@ -373,16 +400,7 @@ const styles = StyleSheet.create({
     color: colors.brandBlack,
   },
 
-  endButton: {
+  endSlideWrap: {
     marginTop: 12,
-    backgroundColor: colors.danger,
-    borderRadius: 16,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  endButtonText: {
-    color: colors.white,
-    fontSize: fontSize.lg,
-    fontWeight: fontWeight.extraBold,
   },
 });
