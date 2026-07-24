@@ -8,12 +8,12 @@
   },
   "home": {
     "appName": "Voice Guide AirLink",
-    "tagline": "Audio sans fil pour visites guidées professionnelles.",
+    "tagline": "Audio sans fil pour visites, conférences et événements en direct.",
     "chooseRole": "Choisissez votre rôle",
     "guideTitle": "Je suis Guide",
-    "guideHelper": "Démarrez une nouvelle visite et diffusez votre voix.",
+    "guideHelper": "Démarrez une session et diffusez votre voix à votre groupe.",
     "guestTitle": "Je suis Invité",
-    "guestHelper": "Rejoignez une visite avec le PIN de votre guide.",
+    "guestHelper": "Rejoignez une session avec le PIN de votre guide.",
     "footer": "Powered by Virgilius Labs"
   },
   "activateLicense": {

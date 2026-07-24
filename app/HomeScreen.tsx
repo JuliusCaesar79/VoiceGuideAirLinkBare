@@ -1,7 +1,7 @@
 // app/HomeScreen.tsx
 
-import React from "react";
-import { View, Text, StyleSheet, Pressable, Image } from "react-native";
+import React, { useRef } from "react";
+import { View, Text, StyleSheet, Pressable, Image, Animated } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
@@ -13,23 +13,34 @@ type Props = {
   onGuestPress: () => void;
 };
 
-// Make sure this file exists:
-// /assets/images/logo-voiceguide-airlink.png
-const logo = require("../assets/images/logo-voiceguide-airlink.png");
+// Trimmed version of /assets/images/logo-voiceguide-airlink.png
+// (original has a lot of empty canvas around the mark; this crop
+// lets the logo render bigger without an oversized bounding box).
+const logo = require("../assets/images/logo-voiceguide-airlink-trimmed.png");
+
+function useSpring() {
+  const scale = useRef(new Animated.Value(1)).current;
+  const onPressIn = () =>
+    Animated.timing(scale, { toValue: 0.93, duration: 90, useNativeDriver: true }).start();
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 9 }).start();
+  return { scale, onPressIn, onPressOut };
+}
 
 export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
+  const guideSpring = useSpring();
+  const guestSpring = useSpring();
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         {/* MAIN */}
         <View style={styles.main}>
-          {/* TOP: Logo + Title */}
+          {/* TOP: Logo */}
           <View style={styles.topSection}>
             <Image source={logo} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.appName}>{t("home.appName")}</Text>
             <Text style={styles.tagline}>{t("home.tagline")}</Text>
           </View>
 
@@ -37,21 +48,35 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
           <View style={styles.middleSection}>
             <Text style={styles.subtitle}>{t("home.chooseRole")}</Text>
 
-            <Pressable
-              style={[styles.buttonBase, styles.buttonGuide]}
-              onPress={onGuidePress}
-            >
-              <Text style={styles.buttonGuideText}>{t("home.guideTitle")}</Text>
-              <Text style={styles.buttonHelper}>{t("home.guideHelper")}</Text>
-            </Pressable>
+            <Animated.View style={[styles.buttonMargin, { transform: [{ scale: guideSpring.scale }] }]}>
+              <View style={styles.shadowStack}>
+                <View style={[styles.fakeShadow, styles.fakeShadowGuide]} />
+                <Pressable
+                  style={[styles.buttonInner, styles.buttonGuide]}
+                  onPress={onGuidePress}
+                  onPressIn={guideSpring.onPressIn}
+                  onPressOut={guideSpring.onPressOut}
+                >
+                  <Text style={styles.buttonGuideText}>{t("home.guideTitle")}</Text>
+                  <Text style={styles.buttonHelper}>{t("home.guideHelper")}</Text>
+                </Pressable>
+              </View>
+            </Animated.View>
 
-            <Pressable
-              style={[styles.buttonBase, styles.buttonGuest]}
-              onPress={onGuestPress}
-            >
-              <Text style={styles.buttonGuestText}>{t("home.guestTitle")}</Text>
-              <Text style={styles.buttonHelperLight}>{t("home.guestHelper")}</Text>
-            </Pressable>
+            <Animated.View style={[styles.buttonMargin, { transform: [{ scale: guestSpring.scale }] }]}>
+              <View style={styles.shadowStack}>
+                <View style={[styles.fakeShadow, styles.fakeShadowGuest]} />
+                <Pressable
+                  style={[styles.buttonInner, styles.buttonGuest]}
+                  onPress={onGuestPress}
+                  onPressIn={guestSpring.onPressIn}
+                  onPressOut={guestSpring.onPressOut}
+                >
+                  <Text style={styles.buttonGuestText}>{t("home.guestTitle")}</Text>
+                  <Text style={styles.buttonHelperLight}>{t("home.guestHelper")}</Text>
+                </Pressable>
+              </View>
+            </Animated.View>
           </View>
         </View>
 
@@ -119,21 +144,14 @@ const styles = StyleSheet.create({
   topSection: {
     alignItems: "center",
     marginTop: 0,
-    marginBottom: 18,
+    marginBottom: 28,
   },
   logo: {
-    width: 170, // slightly reduced for less "crowding" feeling
-    height: 170,
-  },
-  appName: {
-    marginTop: 6,
-    fontSize: fontSize.xxl,
-    fontWeight: fontWeight.bold,
-    color: colors.brandBlack,
-    textAlign: "center",
+    width: 220,
+    height: 161, // matches trimmed logo's aspect ratio (924x678)
   },
   tagline: {
-    marginTop: 4,
+    marginTop: 10,
     fontSize: fontSize.base,
     color: colors.gray500,
     textAlign: "center",
@@ -145,25 +163,44 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: fontSize.xl,
     color: colors.gray700,
-    marginBottom: 14, // a touch more breathing room
+    marginBottom: 22,
   },
 
-  buttonBase: {
+  buttonMargin: {
     width: "100%",
+    marginVertical: 9,
+  },
+  // Android's native drop shadow (elevation/shadow*) renders unreliably
+  // here — a stray notch appears at one rounded corner no matter how the
+  // layers are split. Faking it instead: a flat, solid-color rounded
+  // rectangle sits behind the button, offset down, as its "shadow". No
+  // native shadow rendering involved, so no corner glitch on any device.
+  shadowStack: {
+    position: "relative",
+  },
+  fakeShadow: {
+    position: "absolute",
+    top: 5,
+    left: 0,
+    right: 0,
+    bottom: -5,
     borderRadius: 16,
-    paddingVertical: 12,
+  },
+  fakeShadowGuide: {
+    backgroundColor: "rgba(0,0,0,0.16)",
+  },
+  fakeShadowGuest: {
+    backgroundColor: "rgba(0,0,0,0.08)",
+  },
+  buttonInner: {
+    borderRadius: 16,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 7,
   },
   buttonGuide: {
     backgroundColor: colors.brandYellow,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.14,
-    shadowRadius: 4,
-    elevation: 2,
   },
   buttonGuest: {
     backgroundColor: colors.white,

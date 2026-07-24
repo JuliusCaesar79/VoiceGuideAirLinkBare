@@ -8,12 +8,12 @@
   },
   "home": {
     "appName": "Voice Guide AirLink",
-    "tagline": "Kabelloses Audio für professionelle Führungen.",
+    "tagline": "Kabelloses Audio für Touren, Konferenzen und Live-Events.",
     "chooseRole": "Wähle deine Rolle",
     "guideTitle": "Ich bin Guide",
-    "guideHelper": "Starte eine neue Tour und übertrage deine Stimme.",
+    "guideHelper": "Starte eine Sitzung und übertrage deine Stimme an deine Gruppe.",
     "guestTitle": "Ich bin Gast",
-    "guestHelper": "Tritt einer Tour mit der PIN deines Guides bei.",
+    "guestHelper": "Tritt einer Sitzung mit der PIN deines Guides bei.",
     "footer": "Powered by Virgilius Labs"
   },
   "activateLicense": {

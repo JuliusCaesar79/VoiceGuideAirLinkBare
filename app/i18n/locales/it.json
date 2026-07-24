@@ -8,12 +8,12 @@
   },
   "home": {
     "appName": "Voice Guide AirLink",
-    "tagline": "Audio wireless per tour guidati professionali.",
+    "tagline": "Audio wireless per tour, conferenze ed eventi dal vivo.",
     "chooseRole": "Scegli il tuo ruolo",
     "guideTitle": "Sono una Guida",
-    "guideHelper": "Avvia un nuovo tour e trasmetti la tua voce.",
+    "guideHelper": "Avvia una sessione e trasmetti la tua voce al tuo gruppo.",
     "guestTitle": "Sono un Ospite",
-    "guestHelper": "Unisciti a un tour usando il PIN della tua guida.",
+    "guestHelper": "Unisciti a una sessione usando il PIN della tua guida.",
     "footer": "Powered by Virgilius Labs"
   },
   "activateLicense": {
