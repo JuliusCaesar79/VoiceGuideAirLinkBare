@@ -1,12 +1,13 @@
 // app/screens/guest/GuestTourScreen.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
   ScrollView,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,15 @@ type Props = {
   onStopListening: () => void;
 };
 
+function useSpring() {
+  const scale = useRef(new Animated.Value(1)).current;
+  const onPressIn = () =>
+    Animated.timing(scale, { toValue: 0.93, duration: 90, useNativeDriver: true }).start();
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 9 }).start();
+  return { scale, onPressIn, onPressOut };
+}
+
 export default function GuestTourScreen({
   pin,
   sessionId,
@@ -34,6 +44,7 @@ export default function GuestTourScreen({
   const { t } = useTranslation();
   const [isListening, setIsListening] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
+  const listenSpring = useSpring();
 
   const formatSeconds = (sec: number | null) => {
     if (sec === null || sec < 0) return "--:--";
@@ -194,22 +205,34 @@ export default function GuestTourScreen({
 
       {/* ACTION DOCK (fixed, safe above navbar) */}
       <View style={styles.dock}>
-        <Pressable
-          style={[
-            styles.listenButton,
-            isListening && styles.listenButtonActive,
-          ]}
-          onPress={isListening ? handleStopListening : handleStartListening}
-        >
-          <Text
-            style={[
-              styles.listenButtonText,
-              isListening && styles.listenButtonTextActive,
-            ]}
-          >
-            {isListening ? t("guestTour.stopListening") : t("guestTour.startListening")}
-          </Text>
-        </Pressable>
+        <Animated.View style={{ transform: [{ scale: listenSpring.scale }] }}>
+          <View style={styles.shadowStack}>
+            <View
+              style={[
+                styles.fakeShadow,
+                isListening && styles.fakeShadowLight,
+              ]}
+            />
+            <Pressable
+              style={[
+                styles.listenButton,
+                isListening && styles.listenButtonActive,
+              ]}
+              onPress={isListening ? handleStopListening : handleStartListening}
+              onPressIn={listenSpring.onPressIn}
+              onPressOut={listenSpring.onPressOut}
+            >
+              <Text
+                style={[
+                  styles.listenButtonText,
+                  isListening && styles.listenButtonTextActive,
+                ]}
+              >
+                {isListening ? t("guestTour.stopListening") : t("guestTour.startListening")}
+              </Text>
+            </Pressable>
+          </View>
+        </Animated.View>
 
         <Pressable style={styles.leaveButton} onPress={confirmLeave}>
           <Text style={styles.leaveButtonText}>{t("guestTour.leaveTour")}</Text>
@@ -334,23 +357,33 @@ const styles = StyleSheet.create({
     borderTopColor: colors.dockBorder,
   },
 
+  // Flat offset "fake shadow" instead of native elevation/shadow* — Android's
+  // native drop shadow rendered an unreliable corner glitch (see HomeScreen).
+  shadowStack: {
+    position: "relative",
+  },
+  fakeShadow: {
+    position: "absolute",
+    top: 5,
+    left: 0,
+    right: 0,
+    bottom: -5,
+    borderRadius: 18,
+    backgroundColor: "rgba(0,0,0,0.16)",
+  },
+  fakeShadowLight: {
+    backgroundColor: "rgba(0,0,0,0.08)",
+  },
   listenButton: {
     backgroundColor: colors.brandYellow,
     paddingVertical: 18,
     borderRadius: 18,
     alignItems: "center",
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
   },
   listenButtonActive: {
     backgroundColor: colors.white,
     borderWidth: 2,
     borderColor: colors.brandBlack,
-    shadowOpacity: 0.0,
-    elevation: 0,
   },
   listenButtonText: {
     fontSize: fontSize.xl,
