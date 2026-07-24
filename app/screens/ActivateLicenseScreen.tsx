@@ -155,7 +155,7 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
                   onPressOut={buttonSpring.onPressOut}
                   disabled={isDisabled}
                 >
-                  <Text style={styles.buttonText}>
+                  <Text style={[styles.buttonText, isDisabled && styles.buttonTextDisabled]}>
                     {loading ? t("activateLicense.activating") : t("activateLicense.activate")}
                   </Text>
                 </Pressable>
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.16)",
   },
   fakeShadowDisabled: {
-    opacity: 0.6,
+    opacity: 0,
   },
   button: {
     width: "100%",
@@ -296,12 +296,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandYellow,
   },
   buttonDisabled: {
-    opacity: 0.75,
+    backgroundColor: colors.gray100,
   },
   buttonText: {
     color: colors.brandBlack,
     fontWeight: fontWeight.extraBold,
     fontSize: fontSize.lg,
+  },
+  buttonTextDisabled: {
+    color: colors.gray400,
   },
 
   helperText: {
