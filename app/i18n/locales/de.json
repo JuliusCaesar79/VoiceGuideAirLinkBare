@@ -17,7 +17,7 @@
     "footer": "Powered by Virgilius Labs"
   },
   "activateLicense": {
-    "title": "Lizenz Aktivieren",
+    "title": "Lizenz",
     "subtitle": "Gib deinen Voice Guide AirLink Lizenzcode ein, um den Guide-Modus freizuschalten und deine Touren zu starten.",
     "capacityLabel": "Lizenzkapazität",
     "capacityValue": "Bis zu {{maxGuests}} Gäste",

@@ -1,6 +1,6 @@
 // app/screens/ActivateLicenseScreen.tsx
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Animated,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,12 +25,22 @@ type Props = {
   onBack: () => void;
 };
 
+function useSpring() {
+  const scale = useRef(new Animated.Value(1)).current;
+  const onPressIn = () =>
+    Animated.timing(scale, { toValue: 0.93, duration: 90, useNativeDriver: true }).start();
+  const onPressOut = () =>
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 9 }).start();
+  return { scale, onPressIn, onPressOut };
+}
+
 export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
   const { t } = useTranslation();
   const [licenseCode, setLicenseCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [maxGuests, setMaxGuests] = useState<number | null>(null);
+  const buttonSpring = useSpring();
 
   const handleActivate = async () => {
     const trimmed = licenseCode.trim();
@@ -134,15 +145,22 @@ export default function ActivateLicenseScreen({ onActivated, onBack }: Props) {
 
             {error && <Text style={styles.error}>{error}</Text>}
 
-            <Pressable
-              style={[styles.button, isDisabled && styles.buttonDisabled]}
-              onPress={handleActivate}
-              disabled={isDisabled}
-            >
-              <Text style={styles.buttonText}>
-                {loading ? t("activateLicense.activating") : t("activateLicense.activate")}
-              </Text>
-            </Pressable>
+            <Animated.View style={{ width: "100%", transform: [{ scale: buttonSpring.scale }] }}>
+              <View style={styles.shadowStack}>
+                <View style={[styles.fakeShadow, isDisabled && styles.fakeShadowDisabled]} />
+                <Pressable
+                  style={[styles.button, isDisabled && styles.buttonDisabled]}
+                  onPress={handleActivate}
+                  onPressIn={buttonSpring.onPressIn}
+                  onPressOut={buttonSpring.onPressOut}
+                  disabled={isDisabled}
+                >
+                  <Text style={styles.buttonText}>
+                    {loading ? t("activateLicense.activating") : t("activateLicense.activate")}
+                  </Text>
+                </Pressable>
+              </View>
+            </Animated.View>
 
             <Text style={styles.helperText}>{t("activateLicense.helper")}</Text>
           </View>
@@ -252,18 +270,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  // Flat offset "fake shadow" instead of native elevation/shadow* — Android's
+  // native drop shadow rendered an unreliable corner glitch (see HomeScreen).
+  shadowStack: {
+    position: "relative",
+    marginTop: 2,
+  },
+  fakeShadow: {
+    position: "absolute",
+    top: 5,
+    left: 0,
+    right: 0,
+    bottom: -5,
+    borderRadius: 16,
+    backgroundColor: "rgba(0,0,0,0.16)",
+  },
+  fakeShadowDisabled: {
+    opacity: 0.6,
+  },
   button: {
     width: "100%",
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: "center",
     backgroundColor: colors.brandYellow,
-    marginTop: 2,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
   },
   buttonDisabled: {
     opacity: 0.75,

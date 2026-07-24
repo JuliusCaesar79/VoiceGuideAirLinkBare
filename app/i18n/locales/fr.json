@@ -17,7 +17,7 @@
     "footer": "Powered by Virgilius Labs"
   },
   "activateLicense": {
-    "title": "Activer la Licence",
+    "title": "Licence",
     "subtitle": "Entrez votre code de licence Voice Guide AirLink pour déverrouiller le mode guide et démarrer vos visites.",
     "capacityLabel": "Capacité de la licence",
     "capacityValue": "Jusqu'à {{maxGuests}} invités",
