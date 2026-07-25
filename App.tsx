@@ -22,7 +22,7 @@ import GuideTourScreen from "./app/screens/guide/GuideTourScreen";
 import GuestTourScreen from "./app/screens/guest/GuestTourScreen";
 import { apiEndSession } from "./app/config/api";
 import i18n, { initI18n } from "./app/i18n";
-import { colors } from "./app/theme";
+import { colors, ThemeProvider, loadStoredThemeMode, type ThemeMode } from "./app/theme";
 import { showAlert } from "./app/components/alertBridge";
 import CustomAlertHost from "./app/components/CustomAlertHost";
 
@@ -408,21 +408,27 @@ function AppInner(): React.JSX.Element {
 }
 
 export default function App(): React.JSX.Element {
-  const [i18nReady, setI18nReady] = useState(false);
+  const [appReady, setAppReady] = useState(false);
+  const [initialThemeMode, setInitialThemeMode] = useState<ThemeMode>("auto");
 
   React.useEffect(() => {
-    initI18n().then(() => setI18nReady(true));
+    Promise.all([initI18n(), loadStoredThemeMode()]).then(([, storedMode]) => {
+      setInitialThemeMode(storedMode);
+      setAppReady(true);
+    });
   }, []);
 
-  if (!i18nReady) {
+  if (!appReady) {
     return <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }} />;
   }
 
   return (
-    <SafeAreaProvider>
-      <AppInner />
-      <CustomAlertHost />
-    </SafeAreaProvider>
+    <ThemeProvider initialMode={initialThemeMode}>
+      <SafeAreaProvider>
+        <AppInner />
+        <CustomAlertHost />
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
 

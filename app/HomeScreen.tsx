@@ -1,11 +1,11 @@
 // app/HomeScreen.tsx
 
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { View, Text, StyleSheet, Pressable, Image, Animated } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
-import { colors, fontSize, fontWeight } from "./theme";
+import { fontSize, fontWeight, useTheme, THEME_MODES, type ThemeColors, type ThemeMode } from "./theme";
 import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguageCode } from "./i18n";
 
 type Props = {
@@ -30,6 +30,8 @@ function useSpring() {
 export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
+  const { colors, mode, setMode } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const guideSpring = useSpring();
   const guestSpring = useSpring();
 
@@ -88,6 +90,30 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
             { paddingBottom: Math.max(10, insets.bottom + 10) },
           ]}
         >
+          {/* THEME SWITCHER */}
+          <View style={styles.themeRow}>
+            {THEME_MODES.map((themeMode) => {
+              const isActive = mode === themeMode;
+              return (
+                <Pressable
+                  key={themeMode}
+                  onPress={() => setMode(themeMode as ThemeMode)}
+                  style={[styles.themePill, isActive && styles.themePillActive]}
+                  hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                >
+                  <Text
+                    style={[
+                      styles.themePillText,
+                      isActive && styles.themePillTextActive,
+                    ]}
+                  >
+                    {t(`theme.${themeMode}`)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
           {/* LANGUAGE SWITCHER */}
           <View style={styles.languageRow}>
             {SUPPORTED_LANGUAGES.map((lang) => {
@@ -122,7 +148,8 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.white,
@@ -241,6 +268,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  themeRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  themePill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    marginHorizontal: 3,
+  },
+  themePillActive: {
+    backgroundColor: colors.highlightYellow,
+  },
+  themePillText: {
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.bold,
+    color: colors.gray400,
+  },
+  themePillTextActive: {
+    color: colors.brandBlack,
+  },
+
   languageRow: {
     flexDirection: "row",
     justifyContent: "center",
@@ -263,4 +313,5 @@ const styles = StyleSheet.create({
   languagePillTextActive: {
     color: colors.brandBlack,
   },
-});
+  });
+}

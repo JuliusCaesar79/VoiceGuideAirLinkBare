@@ -2,9 +2,9 @@
 // Branded replacement for the native Alert.alert() popup: same
 // title/message/buttons shape, styled with the app's yellow/black theme.
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Modal, View, Text, Pressable, StyleSheet, Animated } from "react-native";
-import { colors, fontSize, fontWeight } from "../theme";
+import { fontSize, fontWeight, useTheme, type ThemeColors } from "../theme";
 import type { AlertButton } from "./alertBridge";
 
 type Props = {
@@ -16,6 +16,8 @@ type Props = {
 };
 
 export default function CustomAlert({ visible, title, message, buttons, onDismiss }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const scale = useRef(new Animated.Value(0.9)).current;
   const opacity = useRef(new Animated.Value(0)).current;
 
@@ -95,7 +97,8 @@ export default function CustomAlert({ visible, title, message, buttons, onDismis
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.xl,
     fontWeight: fontWeight.extraBold,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
     textAlign: "center",
   },
   message: {
@@ -180,6 +183,7 @@ const styles = StyleSheet.create({
     color: colors.gray500,
   },
   buttonTextDestructive: {
-    color: colors.white,
+    color: colors.pureWhite,
   },
-});
+  });
+}

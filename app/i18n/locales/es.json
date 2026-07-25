@@ -6,6 +6,11 @@
     "error": "Error",
     "unknown": "desconocido"
   },
+  "theme": {
+    "auto": "Auto",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
   "home": {
     "appName": "Voice Guide AirLink",
     "tagline": "Audio inalámbrico para tours, conferencias y eventos en vivo.",

@@ -2,10 +2,10 @@
 // "Slide to confirm" control (iPhone-style "slide to power off") used for
 // destructive actions where an accidental tap must not trigger them.
 
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, PanResponder } from "react-native";
 
-import { colors, fontSize, fontWeight } from "../theme";
+import { fontSize, fontWeight, useTheme, type ThemeColors } from "../theme";
 
 type Props = {
   label: string;
@@ -22,8 +22,11 @@ export default function SlideToConfirm({
   label,
   hint,
   onConfirm,
-  trackColor = colors.danger,
+  trackColor,
 }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const resolvedTrackColor = trackColor ?? colors.danger;
   const [trackWidth, setTrackWidth] = useState(0);
   const pan = useRef(new Animated.Value(0)).current;
   const maxTravel = Math.max(trackWidth - THUMB_SIZE - THUMB_MARGIN * 2, 1);
@@ -76,7 +79,7 @@ export default function SlideToConfirm({
 
   return (
     <View
-      style={[styles.track, { backgroundColor: trackColor }]}
+      style={[styles.track, { backgroundColor: resolvedTrackColor }]}
       onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
     >
       <Animated.Text style={[styles.hint, { opacity: labelOpacity }]} numberOfLines={1}>
@@ -88,8 +91,8 @@ export default function SlideToConfirm({
         style={[styles.thumb, { transform: [{ translateX: pan }] }]}
       >
         <View style={styles.chevronRow}>
-          <View style={[styles.chevron, { borderLeftColor: trackColor }]} />
-          <View style={[styles.chevron, styles.chevronSecond, { borderLeftColor: trackColor }]} />
+          <View style={[styles.chevron, { borderLeftColor: resolvedTrackColor }]} />
+          <View style={[styles.chevron, styles.chevronSecond, { borderLeftColor: resolvedTrackColor }]} />
         </View>
       </Animated.View>
 
@@ -99,7 +102,8 @@ export default function SlideToConfirm({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
   track: {
     height: 56,
     borderRadius: 28,
@@ -108,7 +112,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   hint: {
-    color: colors.white,
+    color: colors.pureWhite,
     fontSize: fontSize.base,
     fontWeight: fontWeight.bold,
     letterSpacing: 0.4,
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
     width: THUMB_SIZE,
     height: THUMB_SIZE,
     borderRadius: THUMB_SIZE / 2,
-    backgroundColor: colors.white,
+    backgroundColor: colors.pureWhite,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -149,4 +153,5 @@ const styles = StyleSheet.create({
     height: 1,
     opacity: 0,
   },
-});
+  });
+}

@@ -1,6 +1,6 @@
 // app/screens/guide/GuideTourScreen.tsx
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { apiGetSessionStatus } from "../../config/api";
-import { colors, fontSize, fontWeight } from "../../theme";
+import { fontSize, fontWeight, useTheme, type ThemeColors } from "../../theme";
 import { showAlert } from "../../components/alertBridge";
 import SlideToConfirm from "../../components/SlideToConfirm";
 
@@ -43,6 +43,8 @@ export default function GuideTourScreen({
   onEnd,
 }: Props) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [currentGuests, setCurrentGuests] = useState(0);
   const broadcastSpring = useSpring();
@@ -240,7 +242,8 @@ export default function GuideTourScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.white,
@@ -262,7 +265,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.extraBold,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
     textAlign: "center",
   },
   subtitle: {
@@ -315,12 +318,12 @@ const styles = StyleSheet.create({
   },
   dividerVertical: {
     width: 1,
-    backgroundColor: "rgba(0,0,0,0.10)",
+    backgroundColor: colors.dividerLight,
     marginHorizontal: 6,
   },
   dividerHorizontal: {
     height: 1,
-    backgroundColor: "rgba(0,0,0,0.10)",
+    backgroundColor: colors.dividerLight,
     marginTop: 14,
     marginBottom: 14,
   },
@@ -389,7 +392,7 @@ const styles = StyleSheet.create({
   broadcastButtonActive: {
     backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: colors.brandBlack,
+    borderColor: colors.textPrimary,
   },
   broadcastButtonText: {
     fontSize: fontSize.xl,
@@ -397,10 +400,11 @@ const styles = StyleSheet.create({
     color: colors.brandBlack,
   },
   broadcastButtonTextActive: {
-    color: colors.brandBlack,
+    color: colors.textPrimary,
   },
 
   endSlideWrap: {
     marginTop: 12,
   },
-});
+  });
+}

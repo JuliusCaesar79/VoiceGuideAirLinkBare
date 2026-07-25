@@ -1,6 +1,6 @@
 // app/screens/guest/GuestTourScreen.tsx
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { apiGetSessionStatus, apiLeaveListener } from "../../config/api";
-import { colors, fontSize, fontWeight } from "../../theme";
+import { fontSize, fontWeight, useTheme, type ThemeColors } from "../../theme";
 import { showAlert } from "../../components/alertBridge";
 
 type Props = {
@@ -42,6 +42,8 @@ export default function GuestTourScreen({
   onStopListening,
 }: Props) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [isListening, setIsListening] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
   const listenSpring = useSpring();
@@ -242,7 +244,8 @@ export default function GuestTourScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.white,
@@ -263,7 +266,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.extraBold,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
     textAlign: "center",
   },
   subtitle: {
@@ -383,7 +386,7 @@ const styles = StyleSheet.create({
   listenButtonActive: {
     backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: colors.brandBlack,
+    borderColor: colors.textPrimary,
   },
   listenButtonText: {
     fontSize: fontSize.xl,
@@ -391,7 +394,7 @@ const styles = StyleSheet.create({
     color: colors.brandBlack,
   },
   listenButtonTextActive: {
-    color: colors.brandBlack,
+    color: colors.textPrimary,
   },
 
   leaveButton: {
@@ -402,8 +405,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   leaveButtonText: {
-    color: colors.white,
+    color: colors.pureWhite,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.extraBold,
   },
-});
+  });
+}

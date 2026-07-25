@@ -1,6 +1,6 @@
 // app/screens/guide/GuideDashboardScreen.tsx
 
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { apiStartSession } from "../../config/api";
-import { colors, fontSize, fontWeight } from "../../theme";
+import { fontSize, fontWeight, useTheme, type ThemeColors } from "../../theme";
 import { showAlert } from "../../components/alertBridge";
 
 type Props = {
@@ -42,6 +42,8 @@ export default function GuideDashboardScreen({
   onBack,
 }: Props) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const buttonSpring = useSpring();
@@ -162,7 +164,8 @@ export default function GuideDashboardScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.white,
@@ -181,7 +184,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   backText: {
-    color: colors.brandBlack,
+    color: colors.textPrimary,
     fontSize: fontSize.base,
   },
 
@@ -204,7 +207,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.extraBold,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
     textAlign: "center",
   },
   subtitle: {
@@ -295,7 +298,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: colors.brandBlack,
+    borderColor: colors.textPrimary,
     backgroundColor: colors.gray50,
     alignItems: "center",
   },
@@ -307,7 +310,7 @@ const styles = StyleSheet.create({
   sessionPin: {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.black,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
   },
   sessionHelper: {
     marginTop: 6,
@@ -316,4 +319,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 16,
   },
-});
+  });
+}

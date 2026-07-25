@@ -1,6 +1,6 @@
 // app/screens/guest/GuestJoinScreen.tsx
 
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { apiJoinPin } from "../../config/api";
-import { colors, fontSize, fontWeight } from "../../theme";
+import { fontSize, fontWeight, useTheme, type ThemeColors } from "../../theme";
 import { showAlert } from "../../components/alertBridge";
 
 type Props = {
@@ -40,6 +40,8 @@ function useSpring() {
 
 export default function GuestJoinScreen({ onJoin, onBack }: Props) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -160,7 +162,8 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.white,
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: fontSize.base,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
   },
 
   scrollContent: {
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.extraBold,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
     marginBottom: 10,
     textAlign: "center",
   },
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xxl,
     textAlign: "center",
     marginBottom: 10,
-    color: colors.brandBlack,
+    color: colors.textPrimary,
   },
 
   error: {
@@ -284,4 +287,5 @@ const styles = StyleSheet.create({
   buttonTextDisabled: {
     color: colors.gray400,
   },
-});
+  });
+}
