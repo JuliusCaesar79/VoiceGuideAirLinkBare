@@ -11,6 +11,7 @@ import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguageCode } from 
 type Props = {
   onGuidePress: () => void;
   onGuestPress: () => void;
+  onShowTutorial: () => void;
 };
 
 // Trimmed version of /assets/images/logo-voiceguide-airlink.png
@@ -27,7 +28,7 @@ function useSpring() {
   return { scale, onPressIn, onPressOut };
 }
 
-export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
+export default function HomeScreen({ onGuidePress, onGuestPress, onShowTutorial }: Props) {
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const { colors, mode, setMode } = useTheme();
@@ -38,6 +39,15 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
+        {/* HELP: reopen the onboarding tutorial anytime */}
+        <Pressable
+          onPress={onShowTutorial}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={styles.helpBtn}
+        >
+          <Text style={styles.helpBtnText}>?</Text>
+        </Pressable>
+
         {/* MAIN */}
         <View style={styles.main}>
           {/* TOP: Logo */}
@@ -60,7 +70,6 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
                   onPressOut={guideSpring.onPressOut}
                 >
                   <Text style={styles.buttonGuideText}>{t("home.guideTitle")}</Text>
-                  <Text style={styles.buttonHelper}>{t("home.guideHelper")}</Text>
                 </Pressable>
               </View>
             </Animated.View>
@@ -75,7 +84,6 @@ export default function HomeScreen({ onGuidePress, onGuestPress }: Props) {
                   onPressOut={guestSpring.onPressOut}
                 >
                   <Text style={styles.buttonGuestText}>{t("home.guestTitle")}</Text>
-                  <Text style={styles.buttonHelperLight}>{t("home.guestHelper")}</Text>
                 </Pressable>
               </View>
             </Animated.View>
@@ -162,6 +170,24 @@ function createStyles(colors: ThemeColors) {
     paddingTop: 18, // slightly less: gives a more balanced vertical rhythm
   },
 
+  helpBtn: {
+    position: "absolute",
+    top: 4,
+    right: 0,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.gray100,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1,
+  },
+  helpBtnText: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
+    color: colors.gray500,
+  },
+
   // Keeps content compact while footer stays at bottom.
   main: {
     flex: 1,
@@ -245,19 +271,6 @@ function createStyles(colors: ThemeColors) {
     fontSize: fontSize.xl,
     fontWeight: fontWeight.bold,
   },
-  buttonHelper: {
-    marginTop: 4,
-    fontSize: fontSize.sm,
-    color: colors.gray900,
-    textAlign: "center",
-  },
-  buttonHelperLight: {
-    marginTop: 4,
-    fontSize: fontSize.sm,
-    color: colors.gray500,
-    textAlign: "center",
-  },
-
   footerSection: {
     alignItems: "center",
     paddingTop: 8,

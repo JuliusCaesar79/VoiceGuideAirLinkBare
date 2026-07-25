@@ -110,7 +110,6 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
         >
           <View style={styles.content}>
             <Text style={styles.title}>{t("guestJoin.title")}</Text>
-            <Text style={styles.subtitle}>{t("guestJoin.subtitle")}</Text>
 
             <TextInput
               style={styles.input}
@@ -204,15 +203,8 @@ function createStyles(colors: ThemeColors) {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.extraBold,
     color: colors.textPrimary,
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: fontSize.md,
-    color: colors.gray500,
     marginBottom: 22,
     textAlign: "center",
-    lineHeight: 20,
   },
 
   input: {

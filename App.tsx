@@ -20,9 +20,11 @@ import GuestJoinScreen from "./app/screens/guest/GuestJoinScreen";
 import GuideDashboardScreen from "./app/screens/guide/GuideDashboardScreen";
 import GuideTourScreen from "./app/screens/guide/GuideTourScreen";
 import GuestTourScreen from "./app/screens/guest/GuestTourScreen";
+import TutorialScreen from "./app/screens/TutorialScreen";
 import { apiEndSession } from "./app/config/api";
 import i18n, { initI18n } from "./app/i18n";
 import { colors, ThemeProvider, loadStoredThemeMode, type ThemeMode } from "./app/theme";
+import { loadTutorialSeen, markTutorialSeen } from "./app/tutorial/tutorialStorage";
 import { showAlert } from "./app/components/alertBridge";
 import CustomAlertHost from "./app/components/CustomAlertHost";
 
@@ -33,6 +35,7 @@ const DEBUG_CHANNEL_NAME = "test-voice";
 
 type Role = "idle" | "guide" | "guest";
 type Screen =
+  | "tutorial"
   | "home"
   | "activateLicense"
   | "guestJoin"
@@ -255,8 +258,8 @@ function NativeDebugScreen(props: { onBack: () => void }) {
 /**
  * App principale
  */
-function AppInner(): React.JSX.Element {
-  const [screen, setScreen] = useState<Screen>("home");
+function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Element {
+  const [screen, setScreen] = useState<Screen>(initialScreen);
 
   // OSPITE
   const [guestPin, setGuestPin] = useState<string | null>(null);
@@ -297,6 +300,17 @@ function AppInner(): React.JSX.Element {
     setScreen("home");
   };
 
+  if (screen === "tutorial") {
+    return (
+      <TutorialScreen
+        onFinish={() => {
+          markTutorialSeen();
+          setScreen("home");
+        }}
+      />
+    );
+  }
+
   if (screen === "home") {
     return (
       <HomeScreen
@@ -310,6 +324,7 @@ function AppInner(): React.JSX.Element {
           }
         }}
         onGuestPress={() => setScreen("guestJoin")}
+        onShowTutorial={() => setScreen("tutorial")}
       />
     );
   }
@@ -410,12 +425,16 @@ function AppInner(): React.JSX.Element {
 export default function App(): React.JSX.Element {
   const [appReady, setAppReady] = useState(false);
   const [initialThemeMode, setInitialThemeMode] = useState<ThemeMode>("auto");
+  const [initialScreen, setInitialScreen] = useState<Screen>("home");
 
   React.useEffect(() => {
-    Promise.all([initI18n(), loadStoredThemeMode()]).then(([, storedMode]) => {
-      setInitialThemeMode(storedMode);
-      setAppReady(true);
-    });
+    Promise.all([initI18n(), loadStoredThemeMode(), loadTutorialSeen()]).then(
+      ([, storedMode, tutorialSeen]) => {
+        setInitialThemeMode(storedMode);
+        setInitialScreen(tutorialSeen ? "home" : "tutorial");
+        setAppReady(true);
+      }
+    );
   }, []);
 
   if (!appReady) {
@@ -425,7 +444,7 @@ export default function App(): React.JSX.Element {
   return (
     <ThemeProvider initialMode={initialThemeMode}>
       <SafeAreaProvider>
-        <AppInner />
+        <AppInner initialScreen={initialScreen} />
         <CustomAlertHost />
       </SafeAreaProvider>
     </ThemeProvider>

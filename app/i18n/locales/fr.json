@@ -11,14 +11,26 @@
     "light": "Clair",
     "dark": "Sombre"
   },
+  "tutorial": {
+    "step1Title": "Bienvenue sur\nVoice Guide AirLink",
+    "step1Body": "Audio sans fil pour visites, conférences et événements en direct. Découvrons comment ça marche.",
+    "step2Title": "Vous êtes guide ?",
+    "step2Body": "Démarrez une session et diffusez votre voix en direct à tout le groupe.",
+    "step3Title": "Vous rejoignez une visite ?",
+    "step3Body": "Entrez le code PIN donné par votre guide et commencez à écouter aussitôt.",
+    "step4Title": "Tout est prêt",
+    "step4Body": "Vous pouvez rouvrir ce guide à tout moment depuis le « ? » sur l'accueil.",
+    "skip": "Passer",
+    "back": "Retour",
+    "next": "Suivant",
+    "start": "Commencer"
+  },
   "home": {
     "appName": "Voice Guide AirLink",
     "tagline": "Audio sans fil pour visites, conférences et événements en direct.",
     "chooseRole": "Choisissez votre rôle",
-    "guideTitle": "Je suis Guide",
-    "guideHelper": "Démarrez une session et diffusez votre voix à votre groupe.",
-    "guestTitle": "Je suis Invité",
-    "guestHelper": "Rejoignez une session avec le PIN de votre guide.",
+    "guideTitle": "Guide",
+    "guestTitle": "Invité",
     "footer": "Powered by Virgilius Labs"
   },
   "activateLicense": {
@@ -39,8 +51,7 @@
     "maxGuestsLine": "\nInvités maximum : {{maxGuests}}"
   },
   "guestJoin": {
-    "title": "Entrez le PIN de la Visite",
-    "subtitle": "Saisissez le code PIN reçu de votre guide pour rejoindre la visite.",
+    "title": "Entrez le PIN de votre guide.",
     "placeholder": "ex. 006BT9",
     "errorEmpty": "Veuillez saisir le code PIN.",
     "errorGeneric": "Impossible de rejoindre la visite. Vérifiez le PIN et réessayez.",

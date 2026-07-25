@@ -11,14 +11,26 @@
     "light": "Claro",
     "dark": "Oscuro"
   },
+  "tutorial": {
+    "step1Title": "Bienvenido a\nVoice Guide AirLink",
+    "step1Body": "Audio inalámbrico para tours, conferencias y eventos en vivo. Veamos cómo funciona.",
+    "step2Title": "¿Eres guía?",
+    "step2Body": "Inicia una sesión y transmite tu voz en directo a todo el grupo.",
+    "step3Title": "¿Te unes a un tour?",
+    "step3Body": "Introduce el PIN que te da tu guía y empieza a escuchar al instante.",
+    "step4Title": "Todo listo",
+    "step4Body": "Puedes volver a abrir esta guía cuando quieras desde el \"?\" en el Inicio.",
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "start": "Empezar"
+  },
   "home": {
     "appName": "Voice Guide AirLink",
     "tagline": "Audio inalámbrico para tours, conferencias y eventos en vivo.",
     "chooseRole": "Elige tu rol",
-    "guideTitle": "Soy Guía",
-    "guideHelper": "Inicia una sesión y transmite tu voz a tu grupo.",
-    "guestTitle": "Soy Invitado",
-    "guestHelper": "Únete a una sesión usando el PIN de tu guía.",
+    "guideTitle": "Guía",
+    "guestTitle": "Invitado",
     "footer": "Powered by Virgilius Labs"
   },
   "activateLicense": {
@@ -39,8 +51,7 @@
     "maxGuestsLine": "\nInvitados máximos: {{maxGuests}}"
   },
   "guestJoin": {
-    "title": "Introduce el PIN del Tour",
-    "subtitle": "Escribe el código PIN que recibiste de tu guía para unirte al tour.",
+    "title": "Introduce el PIN de tu guía.",
     "placeholder": "ej. 006BT9",
     "errorEmpty": "Introduce el código PIN.",
     "errorGeneric": "No se pudo unir al tour. Comprueba el PIN e inténtalo de nuevo.",
