@@ -20,8 +20,8 @@ import { showAlert } from "../../components/alertBridge";
 type Props = {
   maxGuests: number;
   licenseCode: string;
-  // Passiamo PIN e sessionId al padre (App.tsx)
-  onStartTour: (pin: string, sessionId: string | null) => void;
+  // Passiamo PIN, sessionId e token Agora al padre (App.tsx)
+  onStartTour: (pin: string, sessionId: string | null, agoraToken: string | null) => void;
   onDebug?: () => void;
   onBack: () => void;
 };
@@ -66,6 +66,7 @@ export default function GuideDashboardScreen({
 
       const pin: string = res?.pin || "N/A";
       const sessionId: string | null = res?.id || null;
+      const agoraToken: string | null = res?.agora_token ?? null;
 
       setCurrentPin(pin);
       setCurrentSessionId(sessionId);
@@ -75,7 +76,7 @@ export default function GuideDashboardScreen({
         t("guideDashboard.successBody", { pin, maxGuests })
       );
 
-      onStartTour(pin, sessionId);
+      onStartTour(pin, sessionId, agoraToken);
     } catch (err: any) {
       setError(err?.message || t("guideDashboard.errorGeneric"));
     } finally {

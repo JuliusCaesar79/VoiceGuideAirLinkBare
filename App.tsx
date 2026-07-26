@@ -95,7 +95,10 @@ function ensureNativeModule(): boolean {
 /**
  * Helper: avvia broadcast GUIDA con canale dinamico (PIN).
  */
-async function startGuideBroadcast(channelName: string | null) {
+async function startGuideBroadcast(
+  channelName: string | null,
+  agoraToken: string | null = null
+) {
   const ok = await requestMicPermission();
   if (!ok) return;
 
@@ -107,7 +110,7 @@ async function startGuideBroadcast(channelName: string | null) {
   }
 
   try {
-    VoiceGuideForeground.startGuideBroadcast(channelName, null);
+    VoiceGuideForeground.startGuideBroadcast(channelName, agoraToken);
   } catch (e) {
     console.error("Error startGuideBroadcast:", e);
     showAlert(i18n.t("common.error"), String(e));
@@ -117,7 +120,10 @@ async function startGuideBroadcast(channelName: string | null) {
 /**
  * Helper: avvia ascolto OSPITE con canale dinamico (PIN).
  */
-async function startGuestListening(channelName: string | null) {
+async function startGuestListening(
+  channelName: string | null,
+  agoraToken: string | null = null
+) {
   const ok = await requestMicPermission();
   if (!ok) return;
 
@@ -129,7 +135,7 @@ async function startGuestListening(channelName: string | null) {
   }
 
   try {
-    VoiceGuideForeground.startGuestListening(channelName, null);
+    VoiceGuideForeground.startGuestListening(channelName, agoraToken);
   } catch (e) {
     console.error("Error startGuestListening:", e);
     showAlert(i18n.t("common.error"), String(e));
@@ -265,10 +271,12 @@ function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Eleme
   const [guestPin, setGuestPin] = useState<string | null>(null);
   const [guestSessionId, setGuestSessionId] = useState<string | null>(null);
   const [guestListenerId, setGuestListenerId] = useState<string | null>(null);
+  const [guestAgoraToken, setGuestAgoraToken] = useState<string | null>(null);
 
-  // GUIDA - PIN e sessionId (da apiStartSession)
+  // GUIDA - PIN, sessionId e token Agora (da apiStartSession)
   const [guidePin, setGuidePin] = useState<string | null>(null);
   const [guideSessionId, setGuideSessionId] = useState<string | null>(null);
+  const [guideAgoraToken, setGuideAgoraToken] = useState<string | null>(null);
 
   // Licenza attiva: code + maxGuests
   const [activeLicense, setActiveLicense] = useState<{
@@ -297,6 +305,7 @@ function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Eleme
     // 4) Pulizia stato guida + ritorno home
     setGuidePin(null);
     setGuideSessionId(null);
+    setGuideAgoraToken(null);
     setScreen("home");
   };
 
@@ -353,9 +362,10 @@ function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Eleme
       <GuideDashboardScreen
         maxGuests={license.maxGuests}
         licenseCode={license.code}
-        onStartTour={(pin, sessionId) => {
+        onStartTour={(pin, sessionId, agoraToken) => {
           setGuidePin(pin);
           setGuideSessionId(sessionId ?? null);
+          setGuideAgoraToken(agoraToken ?? null);
           setScreen("guideTour");
         }}
         onDebug={() => setScreen("debugNative")}
@@ -370,7 +380,7 @@ function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Eleme
         sessionId={guideSessionId ?? ""}
         pin={guidePin ?? "—"}
         maxGuests={activeLicense?.maxGuests ?? 10}
-        onStartBroadcast={() => startGuideBroadcast(guidePin)}
+        onStartBroadcast={() => startGuideBroadcast(guidePin, guideAgoraToken)}
         onStopBroadcast={stopForegroundService}
         onEnd={handleGuideEnd}
       />
@@ -381,7 +391,7 @@ function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Eleme
     return (
       <GuestJoinScreen
         onBack={() => setScreen("home")}
-        onJoin={({ pin, listenerId, sessionId }) => {
+        onJoin={({ pin, listenerId, sessionId, agoraToken }) => {
           console.log(
             "Guest joined:",
             pin,
@@ -393,6 +403,7 @@ function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Eleme
           setGuestPin(pin);
           setGuestListenerId(listenerId ?? null);
           setGuestSessionId(sessionId ?? null);
+          setGuestAgoraToken(agoraToken ?? null);
           setScreen("guestTour");
         }}
       />
@@ -410,9 +421,10 @@ function AppInner({ initialScreen }: { initialScreen: Screen }): React.JSX.Eleme
           setGuestPin(null);
           setGuestSessionId(null);
           setGuestListenerId(null);
+          setGuestAgoraToken(null);
           setScreen("home");
         }}
-        onStartListening={() => startGuestListening(guestPin)}
+        onStartListening={() => startGuestListening(guestPin, guestAgoraToken)}
         onStopListening={stopForegroundService}
       />
     );

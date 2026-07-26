@@ -25,6 +25,7 @@ type Props = {
     pin: string;
     listenerId: string | null;
     sessionId: string | null;
+    agoraToken: string | null;
   }) => void;
   onBack: () => void;
 };
@@ -62,6 +63,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
 
       const listenerId: string | null = res?.id ?? null;
       const sessionId: string | null = res?.session_id ?? null;
+      const agoraToken: string | null = res?.agora_token ?? null;
 
       showAlert(
         t("guestJoin.successTitle"),
@@ -75,6 +77,7 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
         pin: trimmed,
         listenerId,
         sessionId,
+        agoraToken,
       });
     } catch (err: any) {
       setError(err?.message || t("guestJoin.errorGeneric"));
