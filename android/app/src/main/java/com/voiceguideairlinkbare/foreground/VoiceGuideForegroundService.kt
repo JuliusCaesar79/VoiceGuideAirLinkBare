@@ -243,8 +243,9 @@ class VoiceGuideForegroundService : Service() {
                 // Solo audio, profilo live broadcasting
                 setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING)
 
-                // 🎧 Profilo audio alta qualità + scenario di base (compatibile)
-                setAudioProfile(Constants.AUDIO_PROFILE_MUSIC_HIGH_QUALITY)
+                // 🎧 Profilo voce (non musica): bitrate più basso, più resistente a
+                // connessioni deboli, latenza percepita minore per un tour guidato parlato
+                setAudioProfile(Constants.AUDIO_PROFILE_SPEECH_STANDARD)
                 setAudioScenario(Constants.AUDIO_SCENARIO_DEFAULT)
 
                 enableAudio()
@@ -252,7 +253,7 @@ class VoiceGuideForegroundService : Service() {
 
             Log.i(
                 TAG,
-                "Agora engine initialized (MUSIC_HIGH_QUALITY + SCENARIO_DEFAULT) con appId=$appId"
+                "Agora engine initialized (SPEECH_STANDARD + SCENARIO_DEFAULT) con appId=$appId"
             )
         } catch (e: Exception) {
             Log.e(TAG, "Errore init Agora", e)
