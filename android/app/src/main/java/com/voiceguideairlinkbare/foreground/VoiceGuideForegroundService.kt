@@ -47,10 +47,43 @@ class VoiceGuideForegroundService : Service() {
 
     private var rtcEngine: RtcEngine? = null
 
-    // Handler minimo solo per log (puoi arricchirlo in futuro)
+    // Ruolo corrente: serve a scegliere quale qualità di rete riportare
+    // (guida = upload, ospite = download)
+    private var currentRole: String = ROLE_GUIDE
+
+    // Handler eventi: log + stato audio inoltrato a JS (indicatore connessione/ritardo)
     private val rtcEventHandler = object : IRtcEngineEventHandler() {
         override fun onJoinChannelSuccess(channel: String?, uid: Int, elapsed: Int) {
             Log.i(TAG, "Agora onJoinChannelSuccess: channel=$channel uid=$uid elapsed=$elapsed")
+        }
+
+        override fun onConnectionStateChanged(state: Int, reason: Int) {
+            Log.i(TAG, "Agora onConnectionStateChanged: state=$state reason=$reason")
+            AudioStatusEvents.emit(
+                mapOf("type" to "connection", "state" to state, "reason" to reason)
+            )
+        }
+
+        override fun onNetworkQuality(uid: Int, txQuality: Int, rxQuality: Int) {
+            // uid 0 = questo dispositivo
+            if (uid != 0) return
+            val quality = if (currentRole == ROLE_LISTENER) rxQuality else txQuality
+            AudioStatusEvents.emit(mapOf("type" to "quality", "quality" to quality))
+        }
+
+        override fun onRemoteAudioStats(stats: IRtcEngineEventHandler.RemoteAudioStats?) {
+            // Solo lato ospite: ritardo reale guida → ospite (esclusi gli auricolari Bluetooth)
+            if (stats == null || currentRole != ROLE_LISTENER) return
+            AudioStatusEvents.emit(
+                mapOf(
+                    "type" to "stats",
+                    "e2eDelay" to stats.e2eDelay,
+                    "networkDelay" to stats.networkTransportDelay,
+                    "jitterBufferDelay" to stats.jitterBufferDelay,
+                    "lossRate" to stats.audioLossRate,
+                    "frozenRate" to stats.frozenRate,
+                )
+            )
         }
 
         override fun onUserJoined(uid: Int, elapsed: Int) {
@@ -289,6 +322,8 @@ class VoiceGuideForegroundService : Service() {
             return
         }
 
+        currentRole = role
+
         // 🎭 Impostiamo il ruolo sul motore
         val clientRole = if (role == ROLE_LISTENER) {
             Constants.CLIENT_ROLE_AUDIENCE
@@ -308,6 +343,11 @@ class VoiceGuideForegroundService : Service() {
 
             publishMicrophoneTrack = role != ROLE_LISTENER
             publishCameraTrack = false
+
+            // ⏱ Ospite: latenza minima esplicita (invece di affidarsi al default dell'SDK)
+            if (role == ROLE_LISTENER) {
+                audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY
+            }
         }
 
         val res = engine.joinChannel(token, channelName, uid, options)

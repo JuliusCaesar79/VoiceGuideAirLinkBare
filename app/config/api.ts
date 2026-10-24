@@ -85,10 +85,16 @@ export async function apiGetSessionStatus(sessionId: string) {
 // -------------------------------------------------------------
 // LISTENER (OSPITE)
 // -------------------------------------------------------------
-export async function apiJoinPin(pin: string, displayName?: string) {
+export async function apiJoinPin(
+  pin: string,
+  displayName?: string,
+  listenerId?: string | null
+) {
   const params = new URLSearchParams();
   params.append("pin", pin);
   if (displayName) params.append("display_name", displayName);
+  // Rientro: il backend riusa lo stesso posto invece di occuparne uno nuovo
+  if (listenerId) params.append("listener_id", listenerId);
 
   return request(`/api/join-pin?${params}`, { method: "POST" });
 }

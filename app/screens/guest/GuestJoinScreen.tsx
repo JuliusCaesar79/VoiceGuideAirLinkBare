@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { apiJoinPin } from "../../config/api";
+import { loadGuestListenerId, saveGuestListenerId } from "../../guest/guestListenerStorage";
 import { fontSize, fontWeight, useTheme, type ThemeColors } from "../../theme";
 import { showAlert } from "../../components/alertBridge";
 
@@ -59,11 +60,16 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
     setLoading(true);
 
     try {
-      const res = await apiJoinPin(trimmed);
+      const previousListenerId = await loadGuestListenerId(trimmed);
+      const res = await apiJoinPin(trimmed, undefined, previousListenerId);
 
       const listenerId: string | null = res?.id ?? null;
       const sessionId: string | null = res?.session_id ?? null;
       const agoraToken: string | null = res?.agora_token ?? null;
+
+      if (listenerId) {
+        await saveGuestListenerId(trimmed, listenerId);
+      }
 
       showAlert(
         t("guestJoin.successTitle"),
@@ -80,7 +86,13 @@ export default function GuestJoinScreen({ onJoin, onBack }: Props) {
         agoraToken,
       });
     } catch (err: any) {
-      setError(err?.message || t("guestJoin.errorGeneric"));
+      // Messaggi del backend (in inglese) → testo tradotto e comprensibile
+      const backendErrors: Record<string, string> = {
+        "Session full": t("guestJoin.errorFull"),
+        "Session not found": t("guestJoin.errorNotFound"),
+        "Session expired": t("guestJoin.errorExpired"),
+      };
+      setError(backendErrors[err?.message] || t("guestJoin.errorGeneric"));
     } finally {
       setLoading(false);
     }

@@ -3,9 +3,11 @@ package com.voiceguideairlinkbare.foreground
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.modules.core.DeviceEventManagerModule
 
 class VoiceGuideForegroundModule(
     reactContext: ReactApplicationContext
@@ -27,9 +29,35 @@ class VoiceGuideForegroundModule(
 
     init {
         Log.i(TAG, "VoiceGuideForegroundModule inizializzato (React Native bridge collegato)")
+
+        // 📶 Inoltro a JS degli eventi audio del servizio (evento "VGAudioStatus")
+        AudioStatusEvents.sink = { payload ->
+            if (reactApplicationContext.hasActiveReactInstance()) {
+                val map = Arguments.createMap()
+                payload.forEach { (key, value) ->
+                    when (value) {
+                        is Int -> map.putInt(key, value)
+                        is Double -> map.putDouble(key, value)
+                        is Boolean -> map.putBoolean(key, value)
+                        else -> map.putString(key, value.toString())
+                    }
+                }
+                reactApplicationContext
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                    .emit("VGAudioStatus", map)
+            }
+        }
     }
 
     override fun getName(): String = "VoiceGuideForeground"
+
+    // Richiesti da NativeEventEmitter lato JS (nessuna logica: gli eventi
+    // vengono emessi comunque, JS decide se ascoltarli)
+    @ReactMethod
+    fun addListener(eventName: String) {}
+
+    @ReactMethod
+    fun removeListeners(count: Int) {}
 
     /**
      * Metodo "generico" che avevamo già – lo lascio per compatibilità
